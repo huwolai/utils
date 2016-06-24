@@ -16,6 +16,11 @@ type Route struct {
 
 type Routes []Route
 
+type IHandler interface  {
+
+	Handler(inner http.Handler, name string) http.Handler
+}
+
 func Logger(inner http.Handler, name string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -30,6 +35,28 @@ func Logger(inner http.Handler, name string) http.Handler {
 			time.Since(start),
 		)
 	})
+}
+
+func NewRouterWithHandle(routes []Route,handles []IHandler) *mux.Router {
+	router := mux.NewRouter().StrictSlash(true)
+	for _, route := range routes {
+
+		var handler http.Handler
+		handler = route.HandlerFunc
+
+		rout := router.
+		Methods(route.Method).
+		Path(route.Pattern).
+		Name(route.Name)
+		if handles !=nil {
+			for _,handl := range handles {
+				handler = handl.Handler(handler,route.Name)
+				rout = rout.Handler(handler)
+			}
+		}
+
+	}
+	return router
 }
 
 func NewRouter(routes []Route) *mux.Router {

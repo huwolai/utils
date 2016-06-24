@@ -32,6 +32,9 @@ type TradeMsg struct {
 	//交易通知地址
 	NotifyUrl string `json:"notify_url"`
 
+	//是否必须一次付清
+	NoOnce int `json:"no_once"`
+
 }
 
 func NewTradeMsg() *TradeMsg  {

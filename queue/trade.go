@@ -5,7 +5,7 @@ import (
 	"time"
 	"encoding/json"
 	"log"
-	"gitlab.qiyunxin.com/utils/util"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
 )
 type TradeMsg struct {
 

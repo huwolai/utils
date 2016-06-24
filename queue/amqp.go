@@ -2,7 +2,7 @@ package queue
 
 import (
 	"github.com/streadway/amqp"
-	"gitlab.qiyunxin.com/utils/util"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
 )
 
 var connection *amqp.Connection

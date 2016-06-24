@@ -6,7 +6,7 @@ type Page struct  {
 
 	PageSize uint64 `json:"page_size"`
 	PageIndex uint64 `json:"page_index"`
-
+	Total	uint64 `json:"total"`
 	Data interface{} `json:"data"`
 
 }

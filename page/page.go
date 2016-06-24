@@ -1,5 +1,7 @@
 package page
 
+import "strconv"
+
 type Page struct  {
 
 	PageSize uint64 `json:"page_size"`
@@ -12,4 +14,23 @@ type Page struct  {
 func NewPage(pageIndex uint64,pageSize uint64,data interface{}) *Page {
 
 	return &Page{PageIndex:pageIndex,PageSize:pageSize,Data:data}
+}
+
+//将字符串转换为数字类型 如果字符串为空 则赋值分页默认参数
+func ToPageNumOrDefault(pageIndex string,pageSize string) (pageIndex64 uint64,pageSize64 uint64)  {
+	var pageIndex64 uint64
+	var pageSize64 uint64
+	if pageIndex == "" {
+		pageIndex64 = 1
+	}else {
+		pageIndex64 =strconv.ParseUint(pageIndex,10,64)
+	}
+
+	if pageSize == "" {
+		pageSize64 = 10
+	}else {
+		pageSize64 =strconv.ParseUint(pageSize,10,64)
+	}
+
+	return pageIndex64,pageSize64
 }

@@ -11,9 +11,9 @@ type Page struct  {
 
 }
 
-func NewPage(pageIndex uint64,pageSize uint64,data interface{}) *Page {
+func NewPage(pageIndex uint64,pageSize uint64,total uint64,data interface{}) *Page {
 
-	return &Page{PageIndex:pageIndex,PageSize:pageSize,Data:data}
+	return &Page{PageIndex:pageIndex,PageSize:pageSize,Data:data,Total:total}
 }
 
 //将字符串转换为数字类型 如果字符串为空 则赋值分页默认参数

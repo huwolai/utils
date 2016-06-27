@@ -14,24 +14,9 @@ var environments = map[string]string{
 	"tests":         "config/tests.json",
 }
 
-type Settings struct {
-	PublicKeyPath      string
-	JWTExpirationDelta int
-	MysqlHost	   string
-	MysqlPassword 	   string
-	MysqlUser	   string
-	MysqlDB  	   string
-	//token失效时间
-        TokenExpire        float32
-
-	RedisAddress string
-	//amqp地址
-	AmqpUrl string
-
-}
 
 
-var settings *Settings
+var settings map[string]string
 var env = "preproduction"
 
 func Init() {
@@ -52,18 +37,15 @@ func LoadSettingsByEnv(env string) {
 
 		util.CheckErr(err)
 	}
-	settings = &Settings{}
 	jsonErr := json.Unmarshal(content, &settings)
 	util.CheckErr(jsonErr)
 }
 
 
-func GetSetting() *Settings {
-	if settings == nil {
-		fmt.Println("------")
-		Init()
-	}
-	return settings
+func GetValue(key string) string {
+
+
+	return settings[key]
 }
 
 func IsTestEnvironment() bool {

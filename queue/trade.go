@@ -15,6 +15,8 @@ type TradeMsg struct {
 	TradeType int `json:"trade_type"`
 	//第三方系统中的交易号
 	OutTradeNo string `json:"out_trade_no"`
+	//预付款代号
+	Code string `json:"code"`
 	//第三方系统中的交易类型
 	OutTradeType int `json:"out_trade_type"`
 	//应用ID

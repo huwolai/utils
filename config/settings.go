@@ -46,23 +46,38 @@ func Init() {
 		fmt.Println("Warning: Setting preproduction environment due to lack of GO_ENV value")
 		env = "preproduction"
 	}
-	LoadSettingsByLocalEnv(env)
+
+	var configMap map[string]string
+	err := LoadSettingsByLocalEnv(env,&configMap)
+	util.CheckErr(err)
+
+	var remoteConfigMap map[string]string
+	err = LoadSettingByConfigCenter(env,&remoteConfigMap)
+	util.CheckErr(err)
+
+	for k,v := range remoteConfigMap  {
+		configMap[k] = v
+	}
+
+	settings = configMap
+
 }
 
 //通过本地环境加载配置
-func LoadSettingsByLocalEnv(env string) {
+func LoadSettingsByLocalEnv(env string,resultMap map[string]string) (error) {
 	content, err := ioutil.ReadFile(environments[env])
 	if err != nil {
 		fmt.Println("Error while reading config file", err)
 
 		util.CheckErr(err)
 	}
-	jsonErr := json.Unmarshal(content, &settings)
-	util.CheckErr(jsonErr)
+	jsonErr := json.Unmarshal(content,resultMap)
+
+	return jsonErr
 }
 
 //从配置中心加载配置
-func LoadSettingByConfigCenter(env string) (map[string]interface{},error)  {
+func LoadSettingByConfigCenter(env string,resultMap map[string]string) (error)  {
 
 	url,err :=GetConfigApiUrl()
 	if err!=nil{
@@ -76,11 +91,10 @@ func LoadSettingByConfigCenter(env string) (map[string]interface{},error)  {
 
 	defer response.Body.Close()
 
-	var resultMap map[string]interface{}
-	err = util.ReadJson(response.Body,&resultMap)
+	err = util.ReadJson(response.Body,resultMap)
 
-	return resultMap,err
-	
+	return err
+
 }
 
 func GetConfigApiUrl() (string,error) {

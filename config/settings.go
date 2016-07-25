@@ -150,7 +150,7 @@ func GetConfigApiUrl() (string,error) {
 
 	appId := os.Getenv("APPID")
 	if appId=="" {
-		return "",errors.New("请再环境变量里配置APPID!")
+		return "",errors.New("请在环境变量里配置APPID!")
 	}
 	env := os.Getenv("ENV")
 	if env=="" {

@@ -89,7 +89,7 @@ var settings map[string]interface{}
 var env = "preproduction"
 
 func Init() {
-	env = os.Getenv("ENV")
+	env = os.Getenv("GO_ENV")
 	fmt.Println("环境["+env+"]")
 	if env == "" {
 		fmt.Println("Warning: Setting preproduction environment due to lack of ENV value")
@@ -152,7 +152,7 @@ func GetConfigApiUrl() (string,error) {
 	if appId=="" {
 		return "",errors.New("请在环境变量里配置APPID!")
 	}
-	env := os.Getenv("ENV")
+	env := os.Getenv("GO_ENV")
 	if env=="" {
 		log.Println("warn:没有配置环境变量GO_ENV 将默认使用预生产环境(preproduction)")
 		env = "preproduction"

@@ -17,10 +17,10 @@ func InitMysql() {
 	fmt.Println("init mysql...");
 	loc,_ := time.LoadLocation("Local")
 
-	mysql_host :=config.GetValue("mysql_host")
-	mysql_db :=config.GetValue("mysql_db")
-	mysql_user :=config.GetValue("mysql_user")
-	mysql_password :=config.GetValue("mysql_password")
+	mysql_host :=config.GetValue("mysql_host").ToString()
+	mysql_db :=config.GetValue("mysql_db").ToString()
+	mysql_user :=config.GetValue("mysql_user").ToString()
+	mysql_password :=config.GetValue("mysql_password").ToString()
 	connInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&loc=%s&parseTime=true",mysql_user,mysql_password,mysql_host,mysql_db,loc.String())
 	fmt.Println(connInfo);
 	var err error;

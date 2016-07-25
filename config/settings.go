@@ -5,18 +5,68 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"log"
 	"errors"
 	"net/http"
 	"net"
 	"time"
+	"strconv"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
 )
 
 var environments = map[string]string{
 	"production":    "config/prod.json",
 	"preproduction": "config/pre.json",
 	"tests":         "config/tests.json",
+}
+
+type ConfigValue struct  {
+
+	Value interface{}
+}
+
+func (self*ConfigValue) ToString() string  {
+
+	switch v := self.Value.(type){
+	case int:
+		return strconv.Itoa(v)
+	case string:
+		return v
+	}
+
+	return fmt.Sprintf("%s",self.Value)
+}
+
+func (self*ConfigValue) ToInt() int {
+	switch v := self.Value.(type){
+	case int:
+		return v
+	case string:
+		k,_ := strconv.Atoi(v)
+		return k
+	}
+
+	util.CheckErr(errors.New("不能转换为int类型"))
+
+	return 0
+}
+
+func (self*ConfigValue) ToFloat() float32 {
+	switch v := self.Value.(type){
+	case float32:
+		return v
+	case int:
+
+		return float32(v)
+	case string:
+		f,_ := strconv.ParseFloat(v,20)
+
+		return float32(f)
+	}
+
+	util.CheckErr(errors.New("不能转换为float类型"))
+
+	return 0
 }
 
 var c *http.Client = &http.Client{
@@ -35,7 +85,7 @@ var c *http.Client = &http.Client{
 }
 
 
-var settings map[string]string
+var settings map[string]interface{}
 var env = "preproduction"
 
 func Init() {
@@ -43,15 +93,15 @@ func Init() {
 	pwd, _ := os.Getwd()
 	fmt.Println(pwd)
 	if env == "" {
-		fmt.Println("Warning: Setting preproduction environment due to lack of GO_ENV value")
+		fmt.Println("Warning: Setting preproduction environment due to lack of ENV value")
 		env = "preproduction"
 	}
 
-	var configMap map[string]string
+	var configMap map[string]interface{}
 	err := LoadSettingsByLocalEnv(env,&configMap)
 	util.CheckErr(err)
 
-	var remoteConfigMap map[string]string
+	var remoteConfigMap map[string]interface{}
 	err = LoadSettingByConfigCenter(env,&remoteConfigMap)
 	util.CheckErr(err)
 
@@ -64,7 +114,7 @@ func Init() {
 }
 
 //通过本地环境加载配置
-func LoadSettingsByLocalEnv(env string,resultMap map[string]string) (error) {
+func LoadSettingsByLocalEnv(env string,resultMap *map[string]interface{}) (error) {
 	content, err := ioutil.ReadFile(environments[env])
 	if err != nil {
 		fmt.Println("Error while reading config file", err)
@@ -77,11 +127,11 @@ func LoadSettingsByLocalEnv(env string,resultMap map[string]string) (error) {
 }
 
 //从配置中心加载配置
-func LoadSettingByConfigCenter(env string,resultMap map[string]string) (error)  {
+func LoadSettingByConfigCenter(env string,resultMap *map[string]interface{}) (error)  {
 
 	url,err :=GetConfigApiUrl()
 	if err!=nil{
-		return nil,err
+		return err
 	}
 
 	response,err := c.Get(url+"/config")
@@ -116,13 +166,15 @@ func GetConfigApiUrl() (string,error) {
 	return configUrl+"/" +appId + "/" +env,nil
 }
 
-func GetValue(key string) string {
+func GetValue(key string) *ConfigValue {
 
 	if settings==nil {
-
+		Init()
 	}
 
-	return settings[key]
+	value :=&ConfigValue{settings[key]}
+
+	return value
 }
 
 func IsTestEnvironment() bool {

@@ -15,6 +15,7 @@ import (
 	"crypto/md5"
 	"bufio"
 	"fmt"
+	"log"
 )
 
 const (
@@ -173,6 +174,8 @@ func SignWithBaseSign(params map[string]interface{}, apiKey string,basesign stri
 	}
 	sort.Strings(keys)
 
+	log.Println(keys)
+
 	for _, k := range keys {
 		v := params[k]
 		if v == "" {
@@ -193,9 +196,7 @@ func SignWithBaseSign(params map[string]interface{}, apiKey string,basesign stri
 		bufw.WriteString(basesign)
 	}
 
-
 	bufw.Flush()
-
 	signature := make([]byte, hex.EncodedLen(h.Size()))
 	hex.Encode(signature, h.Sum(nil))
 	return string(bytes.ToUpper(signature))

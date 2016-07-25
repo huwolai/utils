@@ -24,13 +24,17 @@ func InitMysql() {
 	connInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&loc=%s&parseTime=true",mysql_user,mysql_password,mysql_host,mysql_db,loc.String())
 	fmt.Println(connInfo);
 	var err error;
+
 	conn,err = dbr.Open("mysql",connInfo,nil)
+
 	util.CheckErr(err)
 	conn.SetMaxOpenConns(2000)
 	conn.SetMaxIdleConns(1000)
 	conn.Ping()
 
 	fmt.Println("mysql inital is success");
+
+
 }
 
 func NewSession() *dbr.Session {

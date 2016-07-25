@@ -89,9 +89,8 @@ var settings map[string]interface{}
 var env = "preproduction"
 
 func Init() {
-	env = os.Getenv("GO_ENV")
-	pwd, _ := os.Getwd()
-	fmt.Println(pwd)
+	env = os.Getenv("ENV")
+	fmt.Println("环境["+env+"]")
 	if env == "" {
 		fmt.Println("Warning: Setting preproduction environment due to lack of ENV value")
 		env = "preproduction"

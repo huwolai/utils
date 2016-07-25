@@ -92,7 +92,7 @@ func Init() {
 	env = os.Getenv("GO_ENV")
 	fmt.Println("环境["+env+"]")
 	if env == "" {
-		fmt.Println("Warning: Setting preproduction environment due to lack of ENV value")
+		fmt.Println("Warning: Setting preproduction environment due to lack of GO_ENV value")
 		env = "preproduction"
 	}
 
@@ -159,7 +159,7 @@ func GetConfigApiUrl() (string,error) {
 	}
 	configUrl := os.Getenv("CONFIG_URL")
 	if configUrl=="" {
-		return "",errors.New("请再环境变量里配置APPID!")
+		return "",errors.New("请在环境变量里配置CONFIG_URL!")
 	}
 
 	return configUrl+"/" +appId + "/" +env,nil

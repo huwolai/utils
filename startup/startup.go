@@ -34,7 +34,7 @@ func InitDBData() error  {
 	content, err := ioutil.ReadFile("config/init.sql")
 	if err!=nil{
 		log.Println(err)
-		return false
+		return err
 	}
 	_,er := db.NewSession().Exec(string(content))
 	if er!=nil{

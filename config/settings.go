@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"gitlab.qiyunxin.com/tangtao/utils/util"
 	"log"
 	"errors"
 	"net/http"
 	"net"
 	"time"
 	"strconv"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
 )
 
 var environments = map[string]string{

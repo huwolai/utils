@@ -1,7 +1,6 @@
 package network
 
 import (
-	"io/ioutil"
 	"github.com/sendgrid/rest"
 )
 
@@ -21,13 +20,11 @@ func Post(url string, body []byte,headers map[string]string) (byts []byte,err er
 		return nil,err
 	}
 
-	bys,er := ioutil.ReadAll(response.Body)
-
-	return bys,er
+	return []byte(response.Body),nil
 }
 
 
-func GetJson(url string,queryParams map[string]string,headers map[string]string)  {
+func GetJson(url string,queryParams map[string]string,headers map[string]string) (byts []byte,err error) {
 
 	request :=rest.Request{
 		Method:rest.Get,
@@ -41,7 +38,5 @@ func GetJson(url string,queryParams map[string]string,headers map[string]string)
 		return nil,err
 	}
 
-	bys,er := ioutil.ReadAll(response.Body)
-
-	return bys,er
+	return []byte(response.Body),nil
 }

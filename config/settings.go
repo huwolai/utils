@@ -46,7 +46,7 @@ func (self*ConfigValue) ToInt() int {
 		return k
 	}
 
-	util.CheckErr(errors.New("不能转换为int类型"))
+	util.CheckErr(errors.New(self.Value+"不能转换为int类型"))
 
 	return 0
 }

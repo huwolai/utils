@@ -44,6 +44,11 @@ func (self*ConfigValue) ToInt() int {
 	case string:
 		k,_ := strconv.Atoi(v)
 		return k
+	case float32:
+
+		return int(v)
+	case int64:
+		return int(v)
 	default:
 		fmt.Println(v)
 		util.CheckErr(errors.New("不能转换为int类型111"))

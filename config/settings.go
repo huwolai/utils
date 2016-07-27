@@ -51,7 +51,7 @@ func (self*ConfigValue) ToInt() int {
 		return int(v)
 	default:
 		fmt.Println(v)
-		util.CheckErr(errors.New("不能转换为int类型111"))
+		//util.CheckErr(errors.New("不能转换为int类型111"))
 
 		return self.Value.(int)
 

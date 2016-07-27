@@ -1,49 +1,42 @@
 package network
 
 import (
-	"fmt"
-	"net/http"
-	"net"
-	"time"
-	"io"
-	"bytes"
-	"io/ioutil"
+	"github.com/sendgrid/rest"
 )
 
-var c *http.Client = &http.Client{
-	Transport: &http.Transport{
-		Dial: func(netw, addr string) (net.Conn, error) {
-			c, err := net.DialTimeout(netw, addr, time.Second*10)
-			if err != nil {
-				fmt.Println("dail timeout", err)
-				return nil, err
-			}
-			return c, nil
-		},
-		MaxIdleConnsPerHost:   10,
-		ResponseHeaderTimeout: time.Second * 20,
-	},
-}
 
-func Post(url string, bodyType string, body io.Reader) (resp *http.Response, err error)  {
 
-	return c.Post(url,bodyType,body)
-}
+func Post(url string, body []byte,headers map[string]string) (byts []byte,err error)  {
 
-func PostJson(url string,jsonData []byte) (byts []byte,err error)  {
-
-	resp,err := Post(url,"application/json;utf-8",bytes.NewReader(jsonData))
-	if err!=nil{
+	request :=rest.Request{
+		Method:rest.Post,
+		BaseURL:url,
+		Body:body,
+		Headers:headers,
+	}
+	response, err := rest.API(request)
+	if err != nil {
 
 		return nil,err
 	}
 
-	bys,er := ioutil.ReadAll(resp.Body)
-
-	return bys,er
+	return []byte(response.Body),nil
 }
 
-func GetJson(url string)  {
 
+func GetJson(url string,queryParams map[string]string,headers map[string]string) (byts []byte,err error) {
 
+	request :=rest.Request{
+		Method:rest.Get,
+		BaseURL:url,
+		Headers:headers,
+		QueryParams:queryParams,
+	}
+	response, err := rest.API(request)
+	if err != nil {
+
+		return nil,err
+	}
+
+	return []byte(response.Body),nil
 }

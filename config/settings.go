@@ -44,24 +44,37 @@ func (self*ConfigValue) ToInt() int {
 	case string:
 		k,_ := strconv.Atoi(v)
 		return k
-	}
+	case float32:
 
-	util.CheckErr(errors.New("不能转换为int类型"))
+		return int(v)
+	case int64:
+		return int(v)
+	case float64:
+		return int(v)
+	default:
+		fmt.Println(v)
+		//util.CheckErr(errors.New("不能转换为int类型111"))
+
+		return self.Value.(int)
+
+	}
 
 	return 0
 }
 
-func (self*ConfigValue) ToFloat() float32 {
+func (self*ConfigValue) ToFloat() float64 {
 	switch v := self.Value.(type){
 	case float32:
+		return float64(v)
+	case float64:
 		return v
 	case int:
 
-		return float32(v)
+		return float64(v)
 	case string:
 		f,_ := strconv.ParseFloat(v,20)
 
-		return float32(f)
+		return float64(f)
 	}
 
 	util.CheckErr(errors.New("不能转换为float类型"))

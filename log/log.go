@@ -18,7 +18,7 @@ func init()  {
 }
 
 func Info(args ...interface{})  {
-	
+
 	logrus.Info(args)
 }
 

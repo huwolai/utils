@@ -3,7 +3,6 @@ package log
 import (
 	 "github.com/Sirupsen/logrus"
 	"os"
-	"fmt"
 )
 
 

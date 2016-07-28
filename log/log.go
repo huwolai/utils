@@ -3,7 +3,10 @@ package log
 import (
 	 "github.com/Sirupsen/logrus"
 	"os"
+	"fmt"
 )
+
+
 
 func init()  {
 	env := os.Getenv("GO_ENV")
@@ -14,7 +17,8 @@ func init()  {
 		logrus.SetFormatter(&logrus.JSONFormatter{})
 		logrus.SetLevel(logrus.DebugLevel)
 	}
-	
+	logrus.SetOutput(os.Stdout)
+
 }
 
 func Info(args ...interface{})  {

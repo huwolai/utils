@@ -2,12 +2,14 @@ package network
 
 import (
 	"github.com/sendgrid/rest"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 
 
 func Post(url string, body []byte,headers map[string]string) (byts []byte,err error)  {
 
+	log.Debug("请求地址:",url)
 	request :=rest.Request{
 		Method:rest.Post,
 		BaseURL:url,
@@ -16,9 +18,11 @@ func Post(url string, body []byte,headers map[string]string) (byts []byte,err er
 	}
 	response, err := rest.API(request)
 	if err != nil {
-
+		log.Error("请求失败:",err)
 		return nil,err
 	}
+
+	log.Debug("返回结果:",response.Body)
 
 	return []byte(response.Body),nil
 }

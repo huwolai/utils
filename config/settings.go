@@ -101,7 +101,8 @@ var c *http.Client = &http.Client{
 var settings map[string]interface{}
 var env = "preproduction"
 
-func Init() {
+//remote 是否加载远程配置
+func Init(remote bool) error {
 	env = os.Getenv("GO_ENV")
 	fmt.Println("环境["+env+"]")
 	if env == "" {
@@ -111,17 +112,24 @@ func Init() {
 
 	var configMap map[string]interface{}
 	err := LoadSettingsByLocalEnv(env,&configMap)
-	util.CheckErr(err)
+	if err!=nil {
+		return err
+	}
 
-	var remoteConfigMap map[string]interface{}
-	err = LoadSettingByConfigCenter(env,&remoteConfigMap)
-	util.CheckErr(err)
-
-	for k,v := range remoteConfigMap  {
-		configMap[k] = v
+	if remote {
+		var remoteConfigMap map[string]interface{}
+		err = LoadSettingByConfigCenter(env,&remoteConfigMap)
+		if err!=nil{
+			return err
+		}
+		for k,v := range remoteConfigMap  {
+			configMap[k] = v
+		}
 	}
 
 	settings = configMap
+
+	return nil
 
 }
 
@@ -180,9 +188,6 @@ func GetConfigApiUrl() (string,error) {
 
 func GetValue(key string) *ConfigValue {
 
-	if settings==nil {
-		Init()
-	}
 
 	value :=&ConfigValue{settings[key]}
 

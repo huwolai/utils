@@ -102,7 +102,11 @@ func Init() {
 
 	var remoteConfigMap map[string]interface{}
 	err = LoadSettingByConfigCenter(env,&remoteConfigMap)
-	util.CheckErr(err)
+	if err!=nil{
+		fmt.Println("加载配置中心配置错误!")
+		util.CheckErr(err)
+	}
+
 
 	for k,v := range remoteConfigMap  {
 		configMap[k] = v

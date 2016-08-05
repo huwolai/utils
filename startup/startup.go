@@ -2,10 +2,10 @@ package startup
 
 import (
 	"io/ioutil"
-	"log"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"gitlab.qiyunxin.com/tangtao/utils/file"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
+        "github.com/rubenv/sql-migrate"
 )
 
 //是否已安装
@@ -31,16 +31,13 @@ func IsInstall() bool  {
 
 //初始化DB数据
 func InitDBData() error  {
-	content, err := ioutil.ReadFile("config/init.sql")
-	if err!=nil{
-		log.Println(err)
-		return err
+
+	migrations := &migrate.FileMigrationSource{
+		Dir: "config/sql",
 	}
-	_,er := db.NewSession().Exec(string(content))
-	if er!=nil{
-		log.Println(er)
-		return er
-	}
+
+	_, err := migrate.Exec(db.NewSession().DB, "mysql", migrations, migrate.Up)
+
 	return err
 }
 

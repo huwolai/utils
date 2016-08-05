@@ -44,24 +44,37 @@ func (self*ConfigValue) ToInt() int {
 	case string:
 		k,_ := strconv.Atoi(v)
 		return k
-	}
+	case float32:
 
-	util.CheckErr(errors.New("不能转换为int类型"))
+		return int(v)
+	case int64:
+		return int(v)
+	case float64:
+		return int(v)
+	default:
+		fmt.Println(v)
+		//util.CheckErr(errors.New("不能转换为int类型111"))
+
+		return self.Value.(int)
+
+	}
 
 	return 0
 }
 
-func (self*ConfigValue) ToFloat() float32 {
+func (self*ConfigValue) ToFloat() float64 {
 	switch v := self.Value.(type){
 	case float32:
+		return float64(v)
+	case float64:
 		return v
 	case int:
 
-		return float32(v)
+		return float64(v)
 	case string:
 		f,_ := strconv.ParseFloat(v,20)
 
-		return float32(f)
+		return float64(f)
 	}
 
 	util.CheckErr(errors.New("不能转换为float类型"))
@@ -88,7 +101,8 @@ var c *http.Client = &http.Client{
 var settings map[string]interface{}
 var env = "preproduction"
 
-func Init() {
+//remote 是否加载远程配置
+func Init(remote bool) error {
 	env = os.Getenv("GO_ENV")
 	fmt.Println("环境["+env+"]")
 	if env == "" {
@@ -98,21 +112,26 @@ func Init() {
 
 	var configMap map[string]interface{}
 	err := LoadSettingsByLocalEnv(env,&configMap)
-	util.CheckErr(err)
 
-	var remoteConfigMap map[string]interface{}
-	err = LoadSettingByConfigCenter(env,&remoteConfigMap)
-	if err!=nil{
-		fmt.Println("加载配置中心配置错误!")
-		util.CheckErr(err)
+	if err!=nil {
+		return err
 	}
 
 
-	for k,v := range remoteConfigMap  {
-		configMap[k] = v
+	if remote {
+		var remoteConfigMap map[string]interface{}
+		err = LoadSettingByConfigCenter(env,&remoteConfigMap)
+		if err!=nil{
+			return err
+		}
+		for k,v := range remoteConfigMap  {
+			configMap[k] = v
+		}
 	}
 
 	settings = configMap
+
+	return nil
 
 }
 
@@ -171,9 +190,6 @@ func GetConfigApiUrl() (string,error) {
 
 func GetValue(key string) *ConfigValue {
 
-	if settings==nil {
-		Init()
-	}
 
 	value :=&ConfigValue{settings[key]}
 

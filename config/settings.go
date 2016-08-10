@@ -190,7 +190,11 @@ func GetConfigApiUrl() (string,error) {
 
 func GetValue(key string) *ConfigValue {
 
-
+	valueStr := os.Getenv(key)
+	if valueStr!="" {
+		value := &ConfigValue{settings[key]}
+		return value
+	}
 	value :=&ConfigValue{settings[key]}
 
 	return value

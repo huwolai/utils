@@ -12,6 +12,7 @@ import (
 	"time"
 	"strconv"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"bytes"
 )
 
 var environments = map[string]string{
@@ -143,7 +144,11 @@ func LoadSettingsByLocalEnv(env string,resultMap *map[string]interface{}) (error
 
 		util.CheckErr(err)
 	}
-	jsonErr := json.Unmarshal(content,resultMap)
+
+	mdz:=json.NewDecoder(bytes.NewBuffer([]byte(content)))
+
+	mdz.UseNumber()
+	jsonErr := mdz.Decode(resultMap)
 
 	return jsonErr
 }

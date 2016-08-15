@@ -198,6 +198,7 @@ func SignWithBaseSign(params map[string]interface{}, apiKey string,basesign stri
 	}
 
 	bufw.Flush()
+	log.Println(h.Size())
 	signature := make([]byte, hex.EncodedLen(h.Size()))
 	hex.Encode(signature, h.Sum(nil))
 	return string(bytes.ToUpper(signature))

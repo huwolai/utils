@@ -7,7 +7,7 @@ import (
 
 
 
-func Post(url string, body []byte,headers map[string]string) (*rest.Response,err error)  {
+func Post(url string, body []byte,headers map[string]string) (resp *rest.Response,err error)  {
 
 	log.Debug("请求地址:",url)
 	request :=rest.Request{

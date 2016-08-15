@@ -183,6 +183,8 @@ func SignWithBaseSign(params map[string]interface{}, apiKey string,basesign stri
 			continue
 		}
 		vs := ObjToStr(v)
+		log.Println("key="+k)
+		log.Println("value="+vs)
 		bufw.WriteString(k)
 		bufw.WriteByte('=')
 		bufw.WriteString(vs)

@@ -36,10 +36,11 @@ func CheckErr(err error)  {
 }
 
 func ResponseError400(w http.ResponseWriter,msg string){
-
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	ResponseError(w,http.StatusBadRequest,msg)
 }
 func ResponseError(w http.ResponseWriter, statusCode int,msg string)  {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	err := ResultError{statusCode, msg}
 
 	w.WriteHeader(statusCode)
@@ -47,7 +48,7 @@ func ResponseError(w http.ResponseWriter, statusCode int,msg string)  {
 }
 
 func ResponseSuccess(w http.ResponseWriter)  {
-
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	err := NewResultError(0,"OK")
 	WriteJson(w,err)
 

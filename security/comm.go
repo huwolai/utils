@@ -30,6 +30,12 @@ func CheckUserAuth(req *http.Request) (string,error)  {
 	return openId,nil
 }
 
+func GetOpenId(req *http.Request) string {
+	openId := GetParamInRequest("open_id",req)
+
+	return openId
+}
+
 //获取APPID
 func GetAppId(req *http.Request) (string,error)  {
 

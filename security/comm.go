@@ -8,7 +8,7 @@ import (
 //认证校验
 func CheckAppAuth(req *http.Request) (string,error)  {
 
-	appId := GetQueryParamInRequest("app_id",req)
+	appId := GetParamInRequest("app_id",req)
 
 	if appId==""{
 
@@ -20,7 +20,7 @@ func CheckAppAuth(req *http.Request) (string,error)  {
 
 //用户认证
 func CheckUserAuth(req *http.Request) (string,error)  {
-	openId := GetQueryParamInRequest("open_id",req)
+	openId := GetParamInRequest("open_id",req)
 
 	if openId==""{
 
@@ -30,8 +30,19 @@ func CheckUserAuth(req *http.Request) (string,error)  {
 	return openId,nil
 }
 
+//获取APPID
+func GetAppId(req *http.Request) (string,error)  {
+
+	appId :=GetParamInRequest("app_id",req)
+	if appId=="" {
+
+		return errors.New("app_id不能为空")
+	}
+	return appId
+}
+
 //在请求中获取AppId
-func GetQueryParamInRequest(key string,req *http.Request) string  {
+func GetParamInRequest(key string,req *http.Request) string  {
 
 	var value string
 	if values, ok := req.URL.Query()[key]; ok && len(values) > 0 {

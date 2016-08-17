@@ -41,6 +41,12 @@ func GetAppId(req *http.Request) (string,error)  {
 	return appId
 }
 
+func GetAppId2(req *http.Request) string {
+	appId :=GetParamInRequest("app_id",req)
+
+	return appId
+}
+
 //在请求中获取AppId
 func GetParamInRequest(key string,req *http.Request) string  {
 

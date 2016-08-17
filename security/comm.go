@@ -36,9 +36,9 @@ func GetAppId(req *http.Request) (string,error)  {
 	appId :=GetParamInRequest("app_id",req)
 	if appId=="" {
 
-		return errors.New("app_id不能为空")
+		return "",errors.New("app_id不能为空")
 	}
-	return appId
+	return appId,nil
 }
 
 func GetAppId2(req *http.Request) string {

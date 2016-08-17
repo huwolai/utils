@@ -10,4 +10,9 @@ func ToyyyyMMddHHmm(tm time.Time) string {
 }
 
 
+func ToyyyyMM2(tm time.Time) string {
+
+	return tm.Format("200601")
+}
+
 

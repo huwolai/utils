@@ -47,6 +47,22 @@ func ResponseError(w http.ResponseWriter, statusCode int,msg string)  {
 	WriteJson(w,err)
 }
 
+func ResponseErrorS(w http.ResponseWriter, statusCode int,msg string)  {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	err := ResultError{statusCode, msg}
+
+	w.WriteHeader(http.StatusBadRequest)
+	WriteJson(w,err)
+}
+
+func ResponseErrorSS(w http.ResponseWriter,httpStatus, statusCode int,msg string)  {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	err := ResultError{statusCode, msg}
+
+	w.WriteHeader(httpStatus)
+	WriteJson(w,err)
+}
+
 func ResponseSuccess(w http.ResponseWriter)  {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	err := NewResultError(0,"OK")

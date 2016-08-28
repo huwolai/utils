@@ -44,7 +44,7 @@ type AccountEventContent struct  {
 	//账户记录的唯一标识
 	SubTradeNo string
 	//变动金额
-	ChangeAmount float64
+	ChangeAmount int64
 }
 
 

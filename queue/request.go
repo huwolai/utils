@@ -15,6 +15,11 @@ type RequestModel struct  {
 
 }
 
+func NewRequestModel() *RequestModel  {
+
+	return &RequestModel{}
+}
+
 var requestChannel *amqp.Channel
 
 //创建请求生产者

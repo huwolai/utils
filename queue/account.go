@@ -13,7 +13,9 @@ const (
 	ACCOUNT_AMOUNT_EVENT_CHANGE ="ACCOUNT_AMOUNT_EVENT_CHANGE"
 )
 
+
 type AccountEvent struct  {
+	EventKey string
 	//事件名
 	EventName string
 	//事件版本
@@ -23,11 +25,24 @@ type AccountEvent struct  {
 
 }
 
+func NewAccountEvent() *AccountEvent  {
+
+	return &AccountEvent{}
+}
+
+func NewAccountEventContent() *AccountEventContent  {
+
+	return &AccountEventContent{}
+}
 //账户事件正文
 type AccountEventContent struct  {
 	AppId string
 	//账户ID
 	OpenId string
+	//行为
+	Action string
+	//账户记录的唯一标识
+	SubTradeNo string
 	//变动金额
 	ChangeAmount float64
 }
@@ -78,12 +93,12 @@ func PublishAccountEvent(event *AccountEvent) error  {
 }
 
 //消费订单事件
-func ConsumeAccountEvent(fn func(accountEvent *AccountEvent, dv amqp.Delivery))  {
+func ConsumeAccountEvent(consumer string,fn func(accountEvent *AccountEvent, dv amqp.Delivery))  {
 	if requestChannel==nil{
 		requestChannel  =createAccountQueue()
 	}
 	name :="account"
-	msgs, err := requestChannel.Consume(name+"Queue", "", false, false, false, false, nil)
+	msgs, err := requestChannel.Consume(name+"Queue", consumer, false, false, false, false, nil)
 
 	if err==nil{
 		go func() {

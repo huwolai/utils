@@ -15,7 +15,7 @@ import (
 	"crypto/md5"
 	"bufio"
 	"fmt"
-	"pay/log"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 const (

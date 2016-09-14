@@ -15,7 +15,7 @@ import (
 	"crypto/md5"
 	"bufio"
 	"fmt"
-	"log"
+	"pay/log"
 )
 
 const (
@@ -42,7 +42,7 @@ func ResponseError400(w http.ResponseWriter,msg string){
 func ResponseError(w http.ResponseWriter, statusCode int,msg string)  {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	err := ResultError{statusCode, msg}
-
+	log.Error(msg)
 	w.WriteHeader(statusCode)
 	WriteJson(w,err)
 }
@@ -191,7 +191,6 @@ func SignWithBaseSign(params map[string]interface{}, apiKey string,basesign stri
 	}
 	sort.Strings(keys)
 
-	log.Println(keys)
 
 	for _, k := range keys {
 		v := params[k]
@@ -199,8 +198,6 @@ func SignWithBaseSign(params map[string]interface{}, apiKey string,basesign stri
 			continue
 		}
 		vs := ObjToStr(v)
-		log.Println("key="+k)
-		log.Println("value="+vs)
 		bufw.WriteString(k)
 		bufw.WriteByte('=')
 		bufw.WriteString(vs)
@@ -216,7 +213,6 @@ func SignWithBaseSign(params map[string]interface{}, apiKey string,basesign stri
 	}
 
 	bufw.Flush()
-	log.Println(h.Size())
 	signature := make([]byte, hex.EncodedLen(h.Size()))
 	hex.Encode(signature, h.Sum(nil))
 	return string(bytes.ToUpper(signature))

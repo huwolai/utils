@@ -200,6 +200,10 @@ func GetValue(key string) *ConfigValue {
 		value := &ConfigValue{settings[key]}
 		return value
 	}
+	if settings[key]==nil{
+		value :=&ConfigValue{""}
+		return value
+	}
 	value :=&ConfigValue{settings[key]}
 
 	return value

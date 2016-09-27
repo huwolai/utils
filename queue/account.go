@@ -53,7 +53,7 @@ func createAccountQueue() *amqp.Channel {
 	name :="account"
 	requestChannel = GetChannel()
 	//声明一个trade Exchange
-	err := requestChannel.ExchangeDeclare(name+"Ex", "direct", true, false, false, false, nil)
+	err := requestChannel.ExchangeDeclare(name+"Ex", "topic", true, false, false, false, nil)
 	util.CheckErr(err)
 	//声明一个声明一个trade Queue
 	queue,err := requestChannel.QueueDeclare(name+"Queue",true,false,false,false,nil)

@@ -20,13 +20,36 @@ const (
 )
 
 type OrderEvent struct  {
+	//事件KEY
+	EventKey string
 	//事件名
 	EventName string
 	//事件版本
 	Version string
 	//事件数据
-	EventData interface{}
+	//事件数据
+	Content *OrderEventContent
 
+}
+
+type OrderEventContent struct {
+	//订单号
+	OrderNo string
+	//订单类型
+	OrderType int
+	//订单标题
+	Title string
+	//订单金额
+	Amount float64
+	//下单用户
+	OpenId string
+	//扩展数据 (mobile)
+	ExtData map[string]interface{}
+}
+
+func NewOrderEventContent() *OrderEventContent   {
+
+	return &OrderEventContent{}
 }
 
 func NewOrderEvent() *OrderEvent  {
@@ -79,7 +102,7 @@ func PublishOrderEvent(event *OrderEvent) error  {
 }
 
 //消费订单事件
-func ConsumeOrderEvent(fn func(requestModel *RequestModel, dv amqp.Delivery))  {
+func ConsumeOrderEvent(fn func(event *OrderEvent, dv amqp.Delivery))  {
 	if requestChannel==nil{
 		requestChannel  =createOrderQueue()
 	}
@@ -90,7 +113,7 @@ func ConsumeOrderEvent(fn func(requestModel *RequestModel, dv amqp.Delivery))  {
 		go func() {
 
 			for d := range msgs {
-				var request *RequestModel
+				var request *OrderEvent
 				util.ReadJsonByByte(d.Body,&request)
 				fn(request,d)
 			}

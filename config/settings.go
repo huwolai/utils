@@ -138,6 +138,11 @@ func Init(remote bool) error {
 
 //通过本地环境加载配置
 func LoadSettingsByLocalEnv(env string,resultMap *map[string]interface{}) (error) {
+
+	return LoadSettingsByFile(environments[env],resultMap)
+}
+
+func LoadSettingsByFile(file string,resultMap *map[string]interface{})  (error) {
 	content, err := ioutil.ReadFile(environments[env])
 	if err != nil {
 		fmt.Println("Error while reading config file", err)

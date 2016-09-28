@@ -37,6 +37,8 @@ type OrderEventContent struct {
 	OrderNo string
 	//订单类型
 	OrderType int
+	//创建时间
+	CreateTime string
 	//订单标题
 	Title string
 	//订单金额

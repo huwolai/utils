@@ -22,7 +22,6 @@ type JWTAuthenticationBackend struct {
 
 type AuthUser struct  {
 	OpenId string
-	AppId string
 
 }
 const (
@@ -59,8 +58,7 @@ func GetAuthUser(req *http.Request) (*AuthUser,error)  {
 		return nil,errors.New("认证信息无效!")
 	}
 	authUser :=&AuthUser{}
-	authUser.OpenId = jwttoken.Claims["open_id"].(string)
-	authUser.AppId = jwttoken.Claims["app_id"].(string)
+	authUser.OpenId = jwttoken.Claims["sub"].(string)
 
 	return authUser,nil
 }

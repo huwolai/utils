@@ -47,12 +47,19 @@ type OrderEventContent struct {
 	OpenId string
 	Json string
 	Flag string
+	//订单项
+	Items []OrderEventItem
 	//扩展数据 (mobile)
 	ExtData map[string]interface{}
 }
 
-type OrderItem struct {
-	
+type OrderEventItem struct {
+	OrderNo string
+	Num int
+	Price float64
+	TotalPrice float64
+	Flag string
+	Json string
 }
 
 func NewOrderEventContent() *OrderEventContent   {
@@ -63,6 +70,11 @@ func NewOrderEventContent() *OrderEventContent   {
 func NewOrderEvent() *OrderEvent  {
 
 	return &OrderEvent{}
+}
+
+func NewOrderEventItem() *OrderEventItem {
+
+	return &OrderEventItem{}
 }
 
 //创建请求生产者

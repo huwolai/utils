@@ -45,8 +45,14 @@ type OrderEventContent struct {
 	Amount float64
 	//下单用户
 	OpenId string
+	Json string
+	Flag string
 	//扩展数据 (mobile)
 	ExtData map[string]interface{}
+}
+
+type OrderItem struct {
+	
 }
 
 func NewOrderEventContent() *OrderEventContent   {

@@ -48,7 +48,7 @@ type OrderEventContent struct {
 	Json string
 	Flag string
 	//订单项
-	Items []OrderEventItem
+	Items []*OrderEventItem
 	//扩展数据 (mobile)
 	ExtData map[string]interface{}
 }

@@ -56,6 +56,7 @@ type OrderEventContent struct {
 type OrderEventItem struct {
 	OrderNo string
 	Num int
+	Title string
 	Price float64
 	TotalPrice float64
 	Flag string

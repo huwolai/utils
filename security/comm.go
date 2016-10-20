@@ -5,6 +5,18 @@ import (
 	"net/http"
 )
 
+const (
+
+	//不认证
+	SIGN_LEVEL_NO_AUTH = 0
+	//用户或APP认证 两者有其一认证通过就通过
+	SIGN_LEVEL_USER_OR_APP_AUTH =1
+	//仅仅用户认证通过才算通过
+	SIGN_LEVEL_ONLY_USERAUTH =2
+	//仅仅APP认证通过才算通过
+	SIGN_LEVEL_ONLY_APPAUTH =3
+)
+
 //认证校验
 func CheckAppAuth(req *http.Request) (string,error)  {
 
@@ -67,3 +79,4 @@ func GetParamInRequest(key string,req *http.Request) string  {
 	return value
 
 }
+

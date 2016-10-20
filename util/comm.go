@@ -22,11 +22,6 @@ const (
 	Error_Code_OK =0
 )
 
-//认证APP是否合法
-func AuthApp(appId string,appKey string)  error{
-
-	return nil;
-}
 
 
 func CheckErr(err error)  {

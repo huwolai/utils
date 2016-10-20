@@ -13,6 +13,7 @@ type App struct {
 }
 
 func init()  {
+	log.Info("init......")
 	http.HandleFunc("/v1/apps",Apps)
 
 }

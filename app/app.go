@@ -42,7 +42,7 @@ func InitDB() error  {
 		Migrations: []*migrate.Migration{
 			&migrate.Migration{
 				Id:   "app_init",
-				Up:   []string{"CREATE TABLE IF NOT EXISTS app(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
+				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_app(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
 					"app_id VARCHAR(100) UNIQUE COMMENT '应用ID'," +
 					"app_key VARCHAR(255) COMMENT '应用KEY'," +
 					"app_name VARCHAR(255) COMMENT '应用名称'," +

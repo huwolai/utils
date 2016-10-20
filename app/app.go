@@ -3,6 +3,7 @@ package app
 import (
 	"net/http"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
+	"github.com/gin-gonic/gin"
 )
 
 type App struct {
@@ -12,15 +13,17 @@ type App struct {
 	AppDesc string
 }
 
-func init()  {
+func Setup(router gin.IRouter) error {
 	log.Info("init......")
-	http.HandleFunc("/v1/apps",Apps)
+	router.GET("/v1/apps",Apps)
+
+	return nil
 
 }
 
-func Apps(w http.ResponseWriter, r *http.Request)  {
-
+func Apps(c *gin.Context)  {
 	log.Info("测试")
-
-	w.Write([]byte("999999999999"))
+	c.JSON(http.StatusOK,map[string]string{
+		"test": "122",
+	})
 }

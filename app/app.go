@@ -6,33 +6,88 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rubenv/sql-migrate"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
+	"time"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
 )
 
 type App struct {
-	AppId string
-	AppKey string
-	AppName string
-	AppDesc string
+	AppId string `json:"app_id"`
+	AppKey string `json:"app_key"`
+	AppName string `json:"app_name"`
+	AppDesc string `json:"app_desc"`
+	CreateTime time.Time `json:"-"`
+	UpdateTime time.Time `json:"-"`
+	Status int `json:"status"`
+	Json string `json:"json"`
+	Flag string `json:"flag"`
 }
 
-func Setup(router gin.IRouter) error {
-	err := InitDB()
+func Setup()  {
+
+	go func() {
+		err := InitDB()
+		if err!=nil {
+			log.Error(err)
+			log.Info("初始化APP管理的DB失败！")
+			return
+		}
+		router :=gin.Default()
+		router.GET("/v1/apps",AppsAdd)
+
+		log.Info("init app manager success!")
+
+		router.Run(":8081")
+	}()
+}
+
+// 添加APP
+func AppsAdd(c *gin.Context)  {
+
+	var app *App
+	err :=c.BindJSON(&app)
 	if err!=nil {
 		log.Error(err)
-		return err
+		return
 	}
-	log.Info("init......")
-	router.GET("/v1/apps",Apps)
+	if app.AppId=="" {
+		util.ResponseError400(c.Writer,"app_id不能为空！")
+		return
+	}
+	if app.AppName=="" {
+		util.ResponseError400(c.Writer,"app_name不能为空！")
+		return
+	}
+	//生成APPKEY
+	app.AppKey=util.GenerUUId()
+	app.Status = 1 // APP状态为正常
 
-	return nil
+	var existApp *App
+	_,err =db.NewSession().Select("*").From("qyx_app").Where("app_id=?",app.AppId).LoadStructs(&existApp)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询APP失败！")
+		return
+	}
 
+	if existApp!=nil {
+		util.ResponseError400(c.Writer,"APP【"+existApp.AppId+"】已存在！")
+		return
+	}
+
+	//插入APP
+	_,err =db.NewSession().InsertInto("qyx_app").Columns("app_id","app_key","app_name","app_desc","status","json","flag").Record(&app).Exec()
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"添加APP失败！")
+		return
+	}
+
+	c.JSON(http.StatusOK,app)
 }
 
-func Apps(c *gin.Context)  {
-	log.Info("测试")
-	c.JSON(http.StatusOK,map[string]string{
-		"test": "122",
-	})
+func AppsWithPage(c *gin.Context)  {
+
+
 }
 
 //初始化DB数据

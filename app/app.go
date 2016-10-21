@@ -32,7 +32,7 @@ func Setup()  {
 			return
 		}
 		router :=gin.Default()
-		router.GET("/v1/apps",AppsAdd)
+		router.GET("/v1/apps",AppsWithPage)
 
 		log.Info("init app manager success!")
 
@@ -87,6 +87,9 @@ func AppsAdd(c *gin.Context)  {
 
 func AppsWithPage(c *gin.Context)  {
 
+	log.Info("ddddd---")
+
+	c.Writer.Write([]byte("测试"))
 
 }
 

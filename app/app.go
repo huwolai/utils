@@ -34,7 +34,7 @@ func Setup()  {
 		}
 		router :=gin.Default()
 		router.GET("/v1/apps",AppsWithPage)
-		router.GET("/v1/apps",AppsAdd)
+		router.POST("/v1/apps",AppsAdd)
 
 		log.Info("init app manager success!")
 

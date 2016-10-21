@@ -8,6 +8,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"time"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"gitlab.qiyunxin.com/tangtao/utils/page"
 )
 
 type App struct {
@@ -33,6 +34,7 @@ func Setup()  {
 		}
 		router :=gin.Default()
 		router.GET("/v1/apps",AppsWithPage)
+		router.GET("/v1/apps",AppsAdd)
 
 		log.Info("init app manager success!")
 
@@ -85,11 +87,27 @@ func AppsAdd(c *gin.Context)  {
 	c.JSON(http.StatusOK,app)
 }
 
+// 查询APP（分页）
 func AppsWithPage(c *gin.Context)  {
 
-	log.Info("ddddd---")
+	pIndex,pSize := page.ToPageNumOrDefault(c.Query("page_index"),c.Query("page_size"))
+	var apps []*App
+	_,err :=db.NewSession().Select("*").From("qyx_app").OrderDir("create_time",false).Limit(pSize).Offset((pIndex-1)*pSize).LoadStructs(&apps)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询失败！")
+		return
+	}
+	var count int64
+	err =db.NewSession().Select("count(*)").From("qyx_app").LoadValue(&count)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询数量失败！")
+		return
 
-	c.Writer.Write([]byte("测试"))
+	}
+
+	c.JSON(http.StatusOK,page.NewPage(pIndex,pSize,uint64(count),apps))
 
 }
 

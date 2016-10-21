@@ -98,6 +98,10 @@ func AppsWithPage(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"查询失败！")
 		return
 	}
+
+	if apps==nil{
+		apps = make([]*App,0)
+	}
 	var count int64
 	err =db.NewSession().Select("count(*)").From("qyx_app").LoadValue(&count)
 	if err!=nil{

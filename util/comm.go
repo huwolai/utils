@@ -36,6 +36,10 @@ func ResponseError400(w http.ResponseWriter,msg string){
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	ResponseError(w,http.StatusBadRequest,msg)
 }
+func ResponseError401(w http.ResponseWriter,msg string){
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ResponseError(w,http.StatusUnauthorized,msg)
+}
 func ResponseError(w http.ResponseWriter, statusCode int,msg string)  {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	err := ResultError{statusCode, msg}

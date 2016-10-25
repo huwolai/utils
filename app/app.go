@@ -77,7 +77,7 @@ func AppsAdd(c *gin.Context)  {
 	}
 
 	//插入APP
-	_,err =db.NewSession().InsertInto("qyx_app").Columns("app_id","app_key","app_name","app_desc","`status`","`json`","`flag`").Record(app).Exec()
+	_,err =db.NewSession().InsertInto("qyx_app").Columns("app_id","app_key","app_name","app_desc","status","json","flag").Record(app).Exec()
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"添加APP失败！")

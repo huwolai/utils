@@ -16,6 +16,8 @@ import (
 	"bufio"
 	"fmt"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
+	"time"
+	"math/rand"
 )
 
 const (
@@ -228,6 +230,33 @@ func Sign(params map[string]string, apiKey string, fn func() hash.Hash) string {
 	}
 
 	return SignWithBaseSign(objparams,apiKey,"",fn)
+}
+
+// 基础签名
+func SignBase(appKey string) (timestamp,noncestr,basesign string ) {
+	noncestr =GetRandomSalt()
+	timestamp =fmt.Sprintf("%d",time.Now().Unix())
+	signStr := appKey+noncestr+timestamp
+	bytes  := md5.Sum([]byte(signStr))
+	basesign =fmt.Sprintf("%X",bytes)
+	return
+}
+
+// return len=8  salt
+func GetRandomSalt() string {
+	return GetRandomString(8)
+}
+
+//生成随机字符串
+func GetRandomString(num int) string{
+	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	bytes := []byte(str)
+	result := []byte{}
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for i := 0; i < num; i++ {
+		result = append(result, bytes[r.Intn(len(bytes))])
+	}
+	return string(result)
 }
 
 func ObjToStr(v interface{}) string {

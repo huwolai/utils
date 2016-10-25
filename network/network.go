@@ -9,7 +9,7 @@ import (
 
 func Post(url string, body []byte,headers map[string]string) (resp *rest.Response,err error)  {
 
-	log.Debug("请求地址:",url)
+	log.Info("请求地址:",url)
 	request :=rest.Request{
 		Method:rest.Post,
 		BaseURL:url,
@@ -22,7 +22,7 @@ func Post(url string, body []byte,headers map[string]string) (resp *rest.Respons
 		return nil,err
 	}
 
-	log.Debug("返回结果:",response.Body)
+	log.Info("返回结果:",response.Body)
 
 	return response,nil
 }

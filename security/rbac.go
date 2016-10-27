@@ -24,7 +24,7 @@ type Source struct {
 
 type UserSource struct {
 	//资源ID
-	Id string `json:"id"`
+	Id int64 `json:"id"`
 	//应用ID
 	AppId string `json:"app_id"`
 	//用户ID
@@ -33,6 +33,12 @@ type UserSource struct {
 	SourceId string `json:"source_id"`
 	//资源行为
 	Action string `json:"action"`
+}
+
+type UserSourceWrap struct {
+	OpenId string `json:"open_id"`
+	AppId string `json:"app_id"`
+	Sources []*UserSource `json:"sources"`
 }
 
 
@@ -53,7 +59,7 @@ func Setup()  {
 		err := InitDB()
 		if err!=nil {
 			log.Error(err)
-			log.Info("初始化APP管理的DB失败！")
+			log.Info("初始化安全管理的DB失败！")
 			return
 		}
 		router :=gin.Default()
@@ -68,19 +74,35 @@ func Setup()  {
 
 //添加用户资源
 func UserSourcesAdd(c *gin.Context)  {
-	var userSources []*UserSource
-	err :=c.BindJSON(&userSources)
+	var uswrap *UserSourceWrap
+	err :=c.BindJSON(&uswrap)
 	if err!=nil{
 		log.Error(err)
 		util.ResponseError400(c.Writer,"数据格式有误！")
 		return
 	}
 
-	if userSources==nil{
+	if uswrap==nil||uswrap.Sources==nil{
 		util.ResponseError400(c.Writer,"传入数据不能为空！")
 		return
 	}
 
+	if uswrap.AppId==""{
+		util.ResponseError400(c.Writer,"app_id不能为空！")
+		return
+	}
+
+	if uswrap.OpenId == "" {
+		util.ResponseError400(c.Writer,"open_id不能为空！")
+		return
+	}
+
+	//删除用户旧资源
+	_,err =db.NewSession().DeleteFrom("qyx_usersource").Where("app_id=? and open_id=?",uswrap.AppId,uswrap.OpenId).Exec()
+	if err!=nil{
+		util.ResponseError400(c.Writer,"删除用户历史资源失败！")
+		return
+	}
 	tx,_ :=db.NewSession().Begin()
 	defer func() {
 		if err :=recover();err!=nil{
@@ -88,8 +110,10 @@ func UserSourcesAdd(c *gin.Context)  {
 			panic(err)
 		}
 	}()
-	for _,userSource :=range userSources  {
-		_,err :=tx.InsertInto("qyx_usersource").Columns("app_id","open_id","source_id","action").Record(userSource).Exec()
+	for _,usersource :=range uswrap.Sources  {
+		usersource.AppId = uswrap.AppId
+		usersource.OpenId = uswrap.OpenId
+		_,err :=tx.InsertInto("qyx_usersource").Columns("app_id","open_id","source_id","action").Record(usersource).Exec()
 		if err!=nil{
 			tx.Rollback()
 			log.Error(err)
@@ -103,9 +127,11 @@ func UserSourcesAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"添加失败！")
 		return
 	}
-	c.JSON(http.StatusOK,userSources)
+	c.JSON(http.StatusOK,uswrap)
 }
 
+
+//查询所有资源
 func SourcesAll(c *gin.Context)  {
 
 	c.JSON(http.StatusOK,srsAll)

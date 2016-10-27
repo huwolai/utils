@@ -145,10 +145,9 @@ func InitDB() error  {
 			&migrate.Migration{
 				Id:   "security_init",
 				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_appp(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
-					"app_id VARCHAR(100) UNIQUE COMMENT '应用ID'," +
-					"open_id VARCHAR(100) DEFAULT '' COMMENT '用户ID'," +
-					"source_id VARCHAR(255) DEFAULT '' COMMENT '资源ID'," +
-					"`action` VARCHAR(1000) DEFAULT '' NOT NULL COMMENT '行为'," +
+					"app_id VARCHAR(50) UNIQUE COMMENT '应用ID'," +
+					"open_id VARCHAR(50) DEFAULT '' COMMENT '用户ID'," +
+					"source_id VARCHAR(50) DEFAULT '' COMMENT '资源ID'," +
 					"create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'," +
 					"update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'" +
 					") CHARACTER SET utf8"},

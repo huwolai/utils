@@ -143,18 +143,17 @@ func InitDB() error  {
 	migrations := &migrate.MemoryMigrationSource{
 		Migrations: []*migrate.Migration{
 			&migrate.Migration{
-				Id:   "security_init",
-				Up:   []string{"CREATE TABLE qyx_usersource(" +
-					"id BIGINT PRIMARY KEY AUTO_INCREMENT," +
-					"app_id VARCHAR(50) DEFAULT '' COMMENT 'APPID'," +
-					"open_id VARCHAR(50) DEFAULT '' COMMENT '用户ID'," +
-					"source_id VARCHAR(50) DEFAULT '' COMMENT '资源ID'," +
-					"action VARCHAR(50) DEFAULT '' COMMENT '行为'," +
+				Id:   "app_init_1",
+				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_appp(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
+					"app_id VARCHAR(100) UNIQUE COMMENT '应用ID'," +
+					"app_key VARCHAR(255) COMMENT '应用KEY'," +
+					"app_name VARCHAR(255) COMMENT '应用名称'," +
+					"app_desc VARCHAR(1000) COMMENT '应用描述'," +
 					"create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'," +
 					"update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'," +
-					"KEY open_id (open_id)," +
-					"KEY app_id (app_id),KEY actions (action)," +
-					"KEY app_action_open_id (open_id,action,app_id)) CHARACTER SET utf8"},
+					"status int COMMENT '应用状态 0.待审核 1.已审核'," +
+					"json VARCHAR(255) COMMENT '附加数据'," +
+					"flag VARCHAR(255) COMMENT '标记') CHARACTER SET utf8"},
 			},
 		},
 	}

@@ -148,7 +148,7 @@ func InitDB() error  {
 					"app_id VARCHAR(100) UNIQUE COMMENT '应用ID'," +
 					"open_id VARCHAR(100) DEFAULT '' COMMENT '用户ID'," +
 					"source_id VARCHAR(255) DEFAULT '' COMMENT '资源ID'," +
-					"action VARCHAR(1000) DEFAULT '' NOT NULL COMMENT '行为'," +
+					"`action` VARCHAR(1000) DEFAULT '' NOT NULL COMMENT '行为'," +
 					"create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'," +
 					"update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'" +
 					") CHARACTER SET utf8"},

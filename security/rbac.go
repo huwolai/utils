@@ -143,7 +143,7 @@ func InitDB() error  {
 	migrations := &migrate.MemoryMigrationSource{
 		Migrations: []*migrate.Migration{
 			&migrate.Migration{
-				Id:   "users_sources_init",
+				Id:   "app_init_sources",
 				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_usersource(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
 					"app_id VARCHAR(50) UNIQUE COMMENT '应用ID'," +
 					"open_id VARCHAR(50) DEFAULT '' COMMENT '用户ID'," +

@@ -144,13 +144,16 @@ func InitDB() error  {
 		Migrations: []*migrate.Migration{
 			&migrate.Migration{
 				Id:   "security_init",
-				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_appp(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
-					"app_id VARCHAR(50) UNIQUE COMMENT '应用ID'," +
-					"open_id VARCHAR(50) DEFAULT '' COMMENT '用户ID'," +
-					"source_id VARCHAR(50) DEFAULT '' COMMENT '资源ID'," +
+				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_usersource(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
+					"app_id VARCHAR(100) UNIQUE COMMENT '应用ID'," +
+					"app_key VARCHAR(255) COMMENT '应用KEY'," +
+					"app_name VARCHAR(255) COMMENT '应用名称'," +
+					"app_desc VARCHAR(1000) COMMENT '应用描述'," +
 					"create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'," +
-					"update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'" +
-					") CHARACTER SET utf8"},
+					"update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'," +
+					"status int COMMENT '应用状态 0.待审核 1.已审核'," +
+					"json VARCHAR(255) COMMENT '附加数据'," +
+					"flag VARCHAR(255) COMMENT '标记') CHARACTER SET utf8"},
 			},
 		},
 	}

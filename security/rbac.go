@@ -143,12 +143,12 @@ func InitDB() error  {
 	migrations := &migrate.MemoryMigrationSource{
 		Migrations: []*migrate.Migration{
 			&migrate.Migration{
-				Id:   "sources_init",
-				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_appp(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
+				Id:   "app_init_4",
+				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_appppp(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
 					"app_id VARCHAR(50) UNIQUE COMMENT '应用ID'," +
 					"open_id VARCHAR(50) DEFAULT '' COMMENT '用户ID'," +
 					"source_id VARCHAR(50) DEFAULT '' COMMENT '资源ID'," +
-					"action VARCHAR(50) DEFAULT '' NOT NULL COMMENT '行为'," +
+					"`action` VARCHAR(50) DEFAULT '' NOT NULL COMMENT '行为'," +
 					"create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'," +
 					"update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'" +
 					") CHARACTER SET utf8"},

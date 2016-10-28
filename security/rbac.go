@@ -16,8 +16,6 @@ type Source struct {
 	//资源名称
 	Name string `json:"name"`
 	Description string `json:"description"`
-	//资源
-	Resource string `json:"resource"`
 	//
 	Permissions string `json:"permissions"`
 }
@@ -63,6 +61,7 @@ func Setup()  {
 			return
 		}
 		router :=gin.Default()
+		router.GET("/v1/_usersources",UserSourcesGet)
 		router.POST("/v1/_usersources",UserSourcesAdd)
 		router.GET("/v1/_sources",SourcesAll)
 
@@ -86,17 +85,14 @@ func UserSourcesAdd(c *gin.Context)  {
 		util.ResponseError400(c.Writer,"传入数据不能为空！")
 		return
 	}
-
 	if uswrap.AppId==""{
 		util.ResponseError400(c.Writer,"app_id不能为空！")
 		return
 	}
-
 	if uswrap.OpenId == "" {
 		util.ResponseError400(c.Writer,"open_id不能为空！")
 		return
 	}
-
 	//删除用户旧资源
 	_,err =db.NewSession().DeleteFrom("qyx_usersource").Where("app_id=? and open_id=?",uswrap.AppId,uswrap.OpenId).Exec()
 	if err!=nil{
@@ -130,6 +126,29 @@ func UserSourcesAdd(c *gin.Context)  {
 	c.JSON(http.StatusOK,uswrap)
 }
 
+func UserSourcesGet(c *gin.Context)  {
+
+	appId :=c.Query("app_id")
+	if appId=="" {
+		util.ResponseError400(c.Writer,"app_id不能为空！")
+		return
+	}
+
+	openId := c.Query("open_id")
+	if openId=="" {
+		util.ResponseError400(c.Writer,"open_id不能为空！")
+		return
+	}
+
+	 usersources :=make([]*UserSource,0)
+	_,err :=db.NewSession().Select("*").From("qyx_usersource").Where("app_id=? and open_id=?",appId,openId).LoadStructs(&usersources)
+	if err!=nil{
+		log.Error(err)
+		util.ResponseError400(c.Writer,"查询失败！")
+		return
+	}
+	c.JSON(http.StatusOK,usersources)
+}
 
 //查询所有资源
 func SourcesAll(c *gin.Context)  {
@@ -139,7 +158,6 @@ func SourcesAll(c *gin.Context)  {
 
 //初始化DB数据
 func InitDB() error  {
-
 	migrations := &migrate.MemoryMigrationSource{
 		Migrations: []*migrate.Migration{
 			&migrate.Migration{
@@ -155,8 +173,6 @@ func InitDB() error  {
 			},
 		},
 	}
-
 	_, err := migrate.Exec(db.NewSession().DB, "mysql", migrations, migrate.Up)
-
 	return err
 }

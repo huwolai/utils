@@ -22,7 +22,6 @@ type JWTAuthenticationBackend struct {
 
 type AuthUser struct  {
 	OpenId string
-	AppId string
 
 }
 const (
@@ -51,7 +50,7 @@ func GetAuthUser(req *http.Request) (*AuthUser,error)  {
 	}
 	jwttoken,err :=InitJWTAuthenticationBackend().FetchToken(token)
 	if err!=nil{
-		log.Error(err)
+		log.Error("解析认证信息失败:",err)
 		return nil,err
 	}
 	if !jwttoken.Valid {
@@ -59,8 +58,7 @@ func GetAuthUser(req *http.Request) (*AuthUser,error)  {
 		return nil,errors.New("认证信息无效!")
 	}
 	authUser :=&AuthUser{}
-	authUser.OpenId = jwttoken.Claims["open_id"].(string)
-	authUser.AppId = jwttoken.Claims["app_id"].(string)
+	authUser.OpenId = jwttoken.Claims["sub"].(string)
 
 	return authUser,nil
 }
@@ -93,8 +91,10 @@ func (backend *JWTAuthenticationBackend)  FetchToken(authorization string) (toke
 func getPublicKey() *rsa.PublicKey {
 	publicKeyFile, err := os.Open(config.GetValue("publickey_path").ToString())
 	if err != nil {
+		log.Error(err)
 		panic(err)
 	}
+	log.Info("读取到公钥:",publicKeyFile)
 	pemfileinfo, _ := publicKeyFile.Stat()
 	var size int64 = pemfileinfo.Size()
 	pembytes := make([]byte, size)

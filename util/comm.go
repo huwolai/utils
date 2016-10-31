@@ -40,6 +40,12 @@ func ResponseError401(w http.ResponseWriter,msg string){
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	ResponseError(w,http.StatusUnauthorized,msg)
 }
+
+func ResponseError401Msg(w http.ResponseWriter){
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	ResponseError(w,http.StatusUnauthorized,"日志失败")
+}
+
 func ResponseError(w http.ResponseWriter, statusCode int,msg string)  {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	err := ResultError{statusCode, msg}

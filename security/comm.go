@@ -17,7 +17,7 @@ const (
 	SIGN_LEVEL_ONLY_APPAUTH =3
 )
 
-//认证校验
+//认证校验 此方法不将使用 请用AuthApp
 func CheckAppAuth(req *http.Request) (string,error)  {
 
 	appId := GetParamInRequest("app_id",req)
@@ -30,7 +30,7 @@ func CheckAppAuth(req *http.Request) (string,error)  {
 	return appId,nil
 }
 
-//用户认证
+//用户认证 此方法不将使用 请用AuthUser
 func CheckUserAuth(req *http.Request) (string,error)  {
 	openId := GetParamInRequest("open_id",req)
 

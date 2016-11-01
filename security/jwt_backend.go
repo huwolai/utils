@@ -21,7 +21,10 @@ type JWTAuthenticationBackend struct {
 }
 
 type AuthUser struct  {
+	//openid
 	OpenId string
+	//关联ID （第三方ID）
+	Rid string
 
 }
 const (
@@ -39,6 +42,11 @@ func InitJWTAuthenticationBackend() *JWTAuthenticationBackend {
 	}
 
 	return authBackendInstance
+}
+
+func AuthUser(req *http.Request) (*AuthUser,error) {
+
+	return GetAuthUser(req)
 }
 
 //获取认证用户信息
@@ -59,7 +67,7 @@ func GetAuthUser(req *http.Request) (*AuthUser,error)  {
 	}
 	authUser :=&AuthUser{}
 	authUser.OpenId = jwttoken.Claims["sub"].(string)
-
+	authUser.Rid = jwttoken.Claims["r_id"].(string)
 	return authUser,nil
 }
 

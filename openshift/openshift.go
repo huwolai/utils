@@ -1,5 +1,13 @@
 package openshift
 
+import (
+	"gitlab.qiyunxin.com/tangtao/utils/network"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"net/http"
+	"errors"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
+)
+
 const (
 	DEFUALT_NAMESPACE = "qiyunxin"
 	PROTOCOL  =  "http"
@@ -11,6 +19,47 @@ const (
 	//权限管理
 	SECURITYMANAGER_PORT = "8082"
 )
+
+type UserSource struct {
+	//资源ID
+	Id int64 `json:"id"`
+	//应用ID
+	AppId string `json:"app_id"`
+	//用户ID
+	OpenId string `json:"open_id"`
+	//资源ID
+	SourceId string `json:"source_id"`
+	//资源行为
+	Action string `json:"action"`
+}
+
+
+//获取用户资源(权限资源)
+func GetUserSources(serviceId,appId,openId string) ([]*UserSource,error)  {
+	serviceUrl :=GetServiceSecurityUrl(serviceId)
+	queryParam :=map[string]string{
+		"app_id":appId,
+		"open_id": openId,
+	}
+	resp,err :=network.Get(serviceUrl+ "/v1/_usersources",queryParam,nil)
+	if err!=nil{
+		return nil,err
+	}
+	if resp.StatusCode == http.StatusNotFound {
+		return nil,errors.New("服务没提供资源服务！")
+	} else if (resp.StatusCode == http.StatusOK) {
+		var results []*UserSource
+		err :=util.ReadJsonByByte([]byte(resp.Body),&results)
+		if err!=nil{
+			log.Error(err)
+			return nil,err
+		}
+		return results,err
+	}else{
+		return nil,errors.New("服务请求失败！")
+	}
+}
+
 //获取权限管理服务地址
 func GetServiceSecurityUrl(serviceId string) string  {
 

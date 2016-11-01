@@ -18,16 +18,27 @@ func GetServiceSecurityUrl(serviceId string) string  {
 
 }
 
-//获取权限管理服务地址
-func GetServiceSecurityUrlWithNamespace(namespace,serviceId string) string  {
-
-	return GetServiceUrl(namespace,serviceId,SECURITYMANAGER_PORT)
-}
-
 //获取APP服务地址
 func GetServiceAppUrl(serviceId string)  string {
 
 	return GetServiceAppUrlWithNamespace(DEFUALT_NAMESPACE,serviceId)
+}
+//获取API服务地址
+func GetServiceApiUrl(serviceId string) string {
+
+	return GetServiceApiUrlWithNamespace(DEFUALT_NAMESPACE,serviceId)
+}
+
+//获取API服务地址
+func GetServiceApiUrlWithNamespace(namespace,serviceId string) string {
+
+	return GetServiceUrl(namespace,serviceId,SERVICE_PORT)
+}
+
+//获取权限管理服务地址
+func GetServiceSecurityUrlWithNamespace(namespace,serviceId string) string  {
+
+	return GetServiceUrl(namespace,serviceId,SECURITYMANAGER_PORT)
 }
 
 //通过空间获取APP服务地址

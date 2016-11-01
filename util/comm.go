@@ -43,7 +43,7 @@ func ResponseError401(w http.ResponseWriter,msg string){
 
 func ResponseError401Msg(w http.ResponseWriter){
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	ResponseError(w,http.StatusUnauthorized,"日志失败")
+	ResponseError(w,http.StatusUnauthorized,"认证失败")
 }
 
 func ResponseError(w http.ResponseWriter, statusCode int,msg string)  {

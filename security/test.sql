@@ -1,13 +1,37 @@
-CREATE TABLE qyx_usersource(
+CREATE TABLE IF NOT EXISTS qyx_role_resource(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+	app_id VARCHAR(50)  COMMENT '应用ID',
+	role VARCHAR(50) DEFAULT '' COMMENT '角色标识',
+  resource_id VARCHAR(50) DEFAULT '' COMMENT '资源ID',
+	`action` VARCHAR(50) DEFAULT '' NOT NULL COMMENT '行为',
+	create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+	update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
+  flag VARCHAR(50) DEFAULT  '' NOT NULL COMMENT '标记',
+  json VARCHAR(1000) DEFAULT  '' NOT NULL COMMENT '附加数据'
+) CHARACTER SET utf8;
+
+
+CREATE TABLE qyx_role(
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   app_id VARCHAR(50) DEFAULT '' NOT NULL COMMENT 'APPID',
-  open_id VARCHAR(50) DEFAULT '' NOT NULL COMMENT '用户ID',
-  source_id VARCHAR(50) DEFAULT '' NOT NULL COMMENT '资源ID',
-  `action` VARCHAR(50) DEFAULT '' NOT NULL COMMENT '行为',
+  role VARCHAR(50) DEFAULT '' NOT NULL COMMENT '角色',
+  name VARCHAR(50) DEFAULT  '' NOT NULL COMMENT '角色名称',
   create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
-  KEY open_id (open_id),
-  KEY app_id (app_id),
-  KEY actions (action),
-  KEY app_action_open_id (open_id,action,app_id)
-)
+  flag VARCHAR(50) DEFAULT  '' NOT NULL COMMENT '标记',
+  json VARCHAR(1000) DEFAULT  '' NOT NULL COMMENT '附加数据',
+  KEY role (role)
+) CHARACTER SET utf8;
+
+CREATE TABLE qyx_role_user(
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  app_id VARCHAR(50) DEFAULT '' NOT NULL COMMENT 'APPID',
+  role VARCHAR(50) DEFAULT '' NOT NULL COMMENT '角色',
+  open_id VARCHAR(50) DEFAULT '' NOT NULL COMMENT '用户ID',
+  create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',
+  flag VARCHAR(50) DEFAULT  '' NOT NULL COMMENT '标记',
+  json VARCHAR(1000) DEFAULT  '' NOT NULL COMMENT '附加数据',
+  KEY open_id_role (open_id,role),
+  KEY role (role)
+) CHARACTER SET utf8;

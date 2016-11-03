@@ -65,11 +65,44 @@ func Setup()  {
 		router.POST("/v1/_usersources",UserSourcesAdd)
 		router.GET("/v1/_sources",SourcesAll)
 
+		v1 :=router.Group("/v1")
+		{
+			roles := v1.Group("/_roles")
+			{
+				//添加角色
+				roles.POST("/",RoleAdd)
+				//角色列表
+				roles.GET("/",RoleList)
+				//删除角色
+				roles.DELETE("/:role/apps/:app_id",RoleDel)
+			}
+
+			roleresources := v1.Group("/_roleresources")
+			{
+				//获取app对应的角色资源
+				roleresources.GET("/:role/apps/:app_id",RoleResourceList)
+				//添加app对应的角色资源
+				roleresources.POST("/:role/apps/:app_id",RoleResourceAdd)
+			}
+
+			roleusers :=v1.Group("/_roleusers")
+			{	//获取用户角色
+				roleusers.GET("/:open_id/apps/:app_id",RoleUserList)
+			}
+
+			useresources :=v1.Group("/_useresources")
+			{	//获取用户资源
+				useresources.GET("/:open_id/apps/:app_id",RoleUserList)
+			}
+		}
+
 		log.Info("init security manager on 8082!")
 
 		router.Run(":8082")
 	}()
 }
+
+
 
 //添加用户资源
 func UserSourcesAdd(c *gin.Context)  {
@@ -162,14 +195,9 @@ func InitDB() error  {
 		Migrations: []*migrate.Migration{
 			&migrate.Migration{
 				Id:   "app_init_sources",
-				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_usersource(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
-					"app_id VARCHAR(50)  COMMENT '应用ID'," +
-					"open_id VARCHAR(50) DEFAULT '' COMMENT '用户ID'," +
-					"source_id VARCHAR(50) DEFAULT '' COMMENT '资源ID'," +
-					"`action` VARCHAR(50) DEFAULT '' NOT NULL COMMENT '行为'," +
-					"create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'," +
-					"update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳'" +
-					") CHARACTER SET utf8"},
+				Up:   []string{"CREATE TABLE qyx_role(id BIGINT PRIMARY KEY AUTO_INCREMENT,app_id VARCHAR(50) DEFAULT '' NOT NULL COMMENT 'APPID',role VARCHAR(50) DEFAULT '' NOT NULL COMMENT '角色',name VARCHAR(50) DEFAULT  '' NOT NULL COMMENT '角色名称',create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',flag VARCHAR(50) DEFAULT  '' NOT NULL COMMENT '标记',json VARCHAR(1000) DEFAULT  '' NOT NULL COMMENT '附加数据',KEY role (role)) CHARACTER SET utf8;",
+				"CREATE TABLE IF NOT EXISTS qyx_role_resource(id BIGINT PRIMARY KEY AUTO_INCREMENT,app_id VARCHAR(50)  COMMENT '应用ID',role VARCHAR(50) DEFAULT '' COMMENT '角色标识',resource_id VARCHAR(50) DEFAULT '' COMMENT '资源ID',`action` VARCHAR(50) DEFAULT '' NOT NULL COMMENT '行为',create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',flag VARCHAR(50) DEFAULT  '' NOT NULL COMMENT '标记',json VARCHAR(1000) DEFAULT  '' NOT NULL COMMENT '附加数据') CHARACTER SET utf8;",
+				"CREATE TABLE qyx_role_user(id BIGINT PRIMARY KEY AUTO_INCREMENT,app_id VARCHAR(50) DEFAULT '' NOT NULL COMMENT 'APPID',role VARCHAR(50) DEFAULT '' NOT NULL COMMENT '角色',open_id VARCHAR(50) DEFAULT '' NOT NULL COMMENT '用户ID',create_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',update_time timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间戳',flag VARCHAR(50) DEFAULT  '' NOT NULL COMMENT '标记',json VARCHAR(1000) DEFAULT  '' NOT NULL COMMENT '附加数据',KEY open_id_role (open_id,role),KEY role (role)) CHARACTER SET utf8;"},
 			},
 		},
 	}

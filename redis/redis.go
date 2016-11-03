@@ -126,34 +126,34 @@ func (self *RedisConn) SetAndExpire(key string,value interface{},expire float32)
 }
 
 
-func (self *RedisConn) GetString(key string)  string{
+func (self *RedisConn) GetString(key string)  (string,error){
 
 	conn := self.getConn();
 	defer self.putConn(conn)
 
-	result,_:=conn.Cmd("get",key).Str()
+	result,err:=conn.Cmd("get",key).Str()
 
-	return result
+	return result,err
 
 }
 
 // list大小
-func (self *RedisConn) Llen(key string) int64 {
+func (self *RedisConn) Llen(key string) (int64,error) {
 	conn := self.getConn();
 	defer self.putConn(conn)
 
-	result,_:=conn.Cmd("LLEN",key).Int64()
+	result,err:=conn.Cmd("LLEN",key).Int64()
 
-	return result
+	return result,err
 }
 
-func (self *RedisConn) Lrange(key string,start,stop int64) []string {
+func (self *RedisConn) Lrange(key string,start,stop int64) ([]string,error) {
 	conn := self.getConn();
 	defer self.putConn(conn)
 
-	result,_:=conn.Cmd("LRANGE",key,start,stop).List()
+	result,err:=conn.Cmd("LRANGE",key,start,stop).List()
 
-	return result
+	return result,err
 }
 
 //LREM key count value
@@ -163,14 +163,17 @@ count 的值可以是以下几种：
 count > 0 : 从表头开始向表尾搜索，移除与 value 相等的元素，数量为 count 。
 count < 0 : 从表尾开始向表头搜索，移除与 value 相等的元素，数量为 count 的绝对值。
 count = 0 : 移除表中所有与 value 相等的值。
+返回值：
+	被移除元素的数量。
+	因为不存在的 key 被视作空表(empty list)，所以当 key 不存在时， LREM 命令总是返回 0 。
  */
-func (self *RedisConn) Lrem(key string,count int64,value string) []string {
+func (self *RedisConn) Lrem(key string,count int64,value string) (int64,error) {
 	conn := self.getConn();
 	defer self.putConn(conn)
 
-	result,_:=conn.Cmd("LREM",key,count,value).List()
+	result,err:=conn.Cmd("LREM",key,count,value).Int64()
 
-	return result
+	return result,err
 }
 
 /**
@@ -181,11 +184,11 @@ LTRIM key start stop
 你也可以使用负数下标，以 -1 表示列表的最后一个元素， -2 表示列表的倒数第二个元素，以此类推。
 当 key 不是列表类型时，返回一个错误。
  */
-func (self *RedisConn) Ltrim(key string,count int64,value string) []string {
+func (self *RedisConn) Ltrim(key string,start,stop int64) (string,error) {
 	conn := self.getConn();
 	defer self.putConn(conn)
 
-	result,_:=conn.Cmd("LTRIM",key,count,value).List()
+	result,err:=conn.Cmd("LTRIM",key,start,stop).Str()
 
-	return result
+	return result,err
 }

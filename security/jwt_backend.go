@@ -44,7 +44,7 @@ func InitJWTAuthenticationBackend() *JWTAuthenticationBackend {
 	return authBackendInstance
 }
 
-func AuthUser(req *http.Request) (*AuthUser,error) {
+func AuthUsers(req *http.Request) (*AuthUser,error) {
 
 	return GetAuthUser(req)
 }

@@ -42,25 +42,10 @@ func RoleResourceAdd(c *gin.Context)  {
 		}
 	}
 
-	tx,_ :=db.NewSession().Begin()
-	defer func() {
-		if err :=recover();err!=nil{
-			tx.Rollback()
-			panic(err)
-		}
-	}()
-	err =InsertRoleResourceTx(roleresources,tx)
+	err = InsertRoleResources(roleresources)
 	if err!=nil{
 		log.Error(err)
-		tx.Rollback()
 		util.ResponseError400(c.Writer,"添加失败！")
-		return
-	}
-
-	err = tx.Commit()
-	if err!=nil{
-		log.Error(err)
-		util.ResponseError400(c.Writer,"提交失败！")
 		return
 	}
 
@@ -102,7 +87,7 @@ func InsertRoleResources(rrss []*RoleResource) error {
 		return err
 	}
 	defer func() {
-		if err = recover();err!=nil{
+		if err := recover();err!=nil{
 			tx.Rollback()
 			panic(err)
 		}

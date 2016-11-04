@@ -98,7 +98,7 @@ func InsertRoles(roles []*Role) error {
 		return err
 	}
 	defer func() {
-		if err = recover();err!=nil{
+		if err := recover();err!=nil{
 			tx.Rollback()
 			panic(err)
 		}

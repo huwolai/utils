@@ -20,22 +20,21 @@ const (
 	SECURITYMANAGER_PORT = "8082"
 )
 
-type UserSource struct {
-	//资源ID
+type UserResource struct {
 	Id int64 `json:"id"`
-	//应用ID
 	AppId string `json:"app_id"`
-	//用户ID
+	//角色
 	OpenId string `json:"open_id"`
 	//资源ID
-	SourceId string `json:"source_id"`
-	//资源行为
-	Action string `json:"action"`
+	ResourceId string `json:"resource_id"`
+	Action  string `json:"action"`
+	Flag string `json:"flag"`
+	Json string `json:"json"`
 }
 
 
 //获取用户资源(权限资源)
-func GetUserSources(serviceId,appId,openId string) ([]*UserSource,error)  {
+func GetUserSources(serviceId,appId,openId string) ([]*UserResource,error)  {
 	serviceUrl :=GetServiceSecurityUrl(serviceId)
 	resp,err :=network.Get(serviceUrl+ "/v1/_usersources/"+openId+"/apps/"+appId,nil,nil)
 	if err!=nil{
@@ -44,7 +43,7 @@ func GetUserSources(serviceId,appId,openId string) ([]*UserSource,error)  {
 	if resp.StatusCode == http.StatusNotFound {
 		return nil,errors.New("服务没提供资源服务！")
 	} else if (resp.StatusCode == http.StatusOK) {
-		var results []*UserSource
+		var results []*UserResource
 		err :=util.ReadJsonByByte([]byte(resp.Body),&results)
 		if err!=nil{
 			log.Error(err)

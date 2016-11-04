@@ -37,11 +37,7 @@ type UserSource struct {
 //获取用户资源(权限资源)
 func GetUserSources(serviceId,appId,openId string) ([]*UserSource,error)  {
 	serviceUrl :=GetServiceSecurityUrl(serviceId)
-	queryParam :=map[string]string{
-		"app_id":appId,
-		"open_id": openId,
-	}
-	resp,err :=network.Get(serviceUrl+ "/v1/_usersources",queryParam,nil)
+	resp,err :=network.Get(serviceUrl+ "/v1/_usersources/"+openId+"/apps/"+appId,nil,nil)
 	if err!=nil{
 		return nil,err
 	}

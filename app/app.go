@@ -24,14 +24,15 @@ type App struct {
 }
 
 func Setup()  {
-
+	err := InitDB()
+	if err!=nil {
+		log.Error(err)
+		log.Info("初始化APP管理的DB失败！")
+		return
+	}
 	go func() {
-		err := InitDB()
-		if err!=nil {
-			log.Error(err)
-			log.Info("初始化APP管理的DB失败！")
-			return
-		}
+
+
 		router :=gin.Default()
 		router.GET("/v1/_apps",AppsWithPage)
 		router.POST("/v1/_apps",AppsAdd)
@@ -121,7 +122,7 @@ func InitDB() error  {
 	migrations := &migrate.MemoryMigrationSource{
 		Migrations: []*migrate.Migration{
 			&migrate.Migration{
-				Id:   "2_app_init",
+				Id:   "app_init",
 				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_app(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
 					"app_id VARCHAR(100) UNIQUE COMMENT '应用ID'," +
 					"app_key VARCHAR(255) COMMENT '应用KEY'," +

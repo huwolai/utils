@@ -54,7 +54,6 @@ func GetUserSources(serviceId,appId,openId string) ([]*UserResource,error)  {
 		return nil,errors.New("服务请求失败！")
 	}
 }
-
 //获取权限管理服务地址
 func GetServiceSecurityUrl(serviceId string) string  {
 

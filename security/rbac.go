@@ -61,8 +61,8 @@ func Setup()  {
 	}
 	go func() {
 		router :=gin.Default()
-		router.GET("/v1/_usersources",UserSourcesGet)
-		router.POST("/v1/_usersources",UserSourcesAdd)
+		//router.GET("/v1/_usersources",UserSourcesGet)
+		//router.POST("/v1/_usersources",UserSourcesAdd)
 		router.GET("/v1/_sources",SourcesAll)
 
 		v1 :=router.Group("/v1")

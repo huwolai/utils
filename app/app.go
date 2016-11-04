@@ -122,7 +122,7 @@ func InitDB() error  {
 	migrations := &migrate.MemoryMigrationSource{
 		Migrations: []*migrate.Migration{
 			&migrate.Migration{
-				Id:   "app_init",
+				Id:   "app_1_init",
 				Up:   []string{"CREATE TABLE IF NOT EXISTS qyx_app(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
 					"app_id VARCHAR(100) UNIQUE COMMENT '应用ID'," +
 					"app_key VARCHAR(255) COMMENT '应用KEY'," +

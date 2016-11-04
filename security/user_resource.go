@@ -39,6 +39,6 @@ func UserResourceList(c *gin.Context)  {
 
 func QueryUserResource(openId,appId string) ([]*UserResource,error)  {
 	var urs []*UserResource
-	_,err :=db.NewSession().Select("distinct qrr.app_id,qrr.resource_id,qrr.action,qu.open_id").From("qyx_role_user qu").Join("qyx_role_resource qrr","qu.open_id=qrr.open_id and qu.app_id=qrr.app_id").Where("qu.open_id=? and qu.app_id=?",openId,appId).LoadStructs(&urs)
+	_,err :=db.NewSession().Select("distinct qrr.app_id,qrr.resource_id,qrr.action,qu.open_id").From("qyx_role_user qu").Join("qyx_role_resource qrr","qu.role=qrr.role and qu.app_id=qrr.app_id").Where("qu.open_id=? and qu.app_id=?",openId,appId).LoadStructs(&urs)
 	return urs,err
 }

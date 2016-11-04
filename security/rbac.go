@@ -92,7 +92,7 @@ func Setup()  {
 
 			useresources :=v1.Group("/_useresources")
 			{	//获取用户资源
-				useresources.GET("/:open_id/apps/:app_id",RoleUserList)
+				useresources.GET("/:open_id/apps/:app_id",UserResourceList)
 			}
 		}
 

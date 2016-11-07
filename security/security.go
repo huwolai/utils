@@ -52,7 +52,7 @@ func Auth(req *http.Request) (*Security,error) {
 		appSecurity.AppId = appSign.App.AppId
 		appSecurity.Sign = appSign.Sign
 
-		return &Security{Level:securityLevel,AppSecurity:appSecurity}
+		return &Security{Level:securityLevel,AppSecurity:appSecurity},nil
 	}
 
 	if securityLevel == SECURITY_LEVEL_USER {
@@ -65,7 +65,7 @@ func Auth(req *http.Request) (*Security,error) {
 		userSecurity.Rid = authU.Rid
 		userSecurity.Token = app.GetParamInRequest("Authorization",req)
 
-		return &Security{Level:securityLevel,UserSecurity:userSecurity}
+		return &Security{Level:securityLevel,UserSecurity:userSecurity},nil
 	}
 	return nil,errors.New("没有此认证方式！")
 }

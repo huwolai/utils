@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"gitlab.qiyunxin.com/tangtao/utils/app"
 	"errors"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 const (
@@ -40,10 +41,13 @@ func Auth(req *http.Request) (*Security,error) {
 
 	securityLevel :=GetSecurityLevel(req)
 	if securityLevel==""{
+		log.Warn("没有认证信息！")
 		return nil,errors.New("没有认证信息！")
 	}
+	
 
-	if securityLevel == SECURITY_LEVEL_APP{ //app级别的权限
+	if securityLevel == SECURITY_LEVEL_APP{//app级别的权限
+		log.Info("APP 认证方式..")
 		appSign,err :=app.Auth(req)
 		if err!=nil{
 			return nil,err
@@ -55,7 +59,9 @@ func Auth(req *http.Request) (*Security,error) {
 		return &Security{Level:securityLevel,AppSecurity:appSecurity},nil
 	}
 
-	if securityLevel == SECURITY_LEVEL_USER { //用户级别的权限
+
+	if securityLevel == SECURITY_LEVEL_USER {//用户级别的权限
+		log.Info("用户Authorization认证方式..")
 		authU,err :=AuthUsers(req)
 		if err!=nil{
 			return nil,err
@@ -67,6 +73,7 @@ func Auth(req *http.Request) (*Security,error) {
 
 		return &Security{Level:securityLevel,UserSecurity:userSecurity},nil
 	}
+	log.Warn("没有认证方式！")
 	return nil,errors.New("没有此认证方式！")
 }
 

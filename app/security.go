@@ -105,14 +105,14 @@ func Auth(req *http.Request) (*AppSign,error)  {
 
 //在请求中获取AppId
 func GetParamInRequest(key string,req *http.Request) string  {
-
-	var value string
-	if values, ok := req.URL.Query()[key]; ok && len(values) > 0 {
-		value = values[0]
-	}
+	var value string = req.Header.Get(key)
 	if value=="" {
-		value = req.Header.Get(key)
+		if values, ok := req.URL.Query()[key]; ok && len(values) > 0 {
+			value = values[0]
+		}
 	}
+
+
 
 	return value
 

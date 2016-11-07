@@ -43,7 +43,7 @@ func Auth(req *http.Request) (*Security,error) {
 		return nil,errors.New("没有认证信息！")
 	}
 
-	if securityLevel == SECURITY_LEVEL_APP{
+	if securityLevel == SECURITY_LEVEL_APP{ //app级别的权限
 		appSign,err :=app.Auth(req)
 		if err!=nil{
 			return nil,err
@@ -52,10 +52,10 @@ func Auth(req *http.Request) (*Security,error) {
 		appSecurity.AppId = appSign.App.AppId
 		appSecurity.Sign = appSign.Sign
 
-		return &Security{Level:securityLevel,AppSecurity:appSecurity}
+		return &Security{Level:securityLevel,AppSecurity:appSecurity},nil
 	}
 
-	if securityLevel == SECURITY_LEVEL_USER {
+	if securityLevel == SECURITY_LEVEL_USER { //用户级别的权限
 		authU,err :=AuthUsers(req)
 		if err!=nil{
 			return nil,err
@@ -65,9 +65,40 @@ func Auth(req *http.Request) (*Security,error) {
 		userSecurity.Rid = authU.Rid
 		userSecurity.Token = app.GetParamInRequest("Authorization",req)
 
-		return &Security{Level:securityLevel,UserSecurity:userSecurity}
+		return &Security{Level:securityLevel,UserSecurity:userSecurity},nil
 	}
 	return nil,errors.New("没有此认证方式！")
+}
+
+//权限认证和open_id认证
+func AuthAndOpenId(openId string,req *http.Request) (*Security,error)  {
+	sec,err := Auth(req)
+	if err!=nil{
+		return nil,err
+	}
+	if !OpenIdIsOk(openId,sec) {//用户不被允许
+		return nil,errors.New("用户不被允许操作！")
+	}
+
+	return  sec,nil
+}
+
+//open_id是否被允许
+func OpenIdIsOk(openId string,sec *Security) bool  {
+
+	if sec.Level==SECURITY_LEVEL_USER {
+		if openId == sec.UserSecurity.OpenId {
+
+			return true
+		}
+	}
+
+	if sec.Level==SECURITY_LEVEL_APP {
+
+		return true
+	}
+
+	return false
 }
 
 func GetSecurityLevel(req *http.Request) string  {

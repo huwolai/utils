@@ -11,14 +11,12 @@ type TradeMsg struct {
 
 	//交易号
 	TradeNo string `json:"trade_no"`
-	//交易类型 1.充值 2.普通支出
-	TradeType int `json:"trade_type"`
 	//第三方系统中的交易号
 	OutTradeNo string `json:"out_trade_no"`
+	// 备用数据
+	Memo string  `json:"memo"`
 	//预付款代号
-	Code string `json:"code"`
-	//第三方系统中的交易类型
-	OutTradeType int `json:"out_trade_type"`
+	ImprestCode string `json:"imprest_code"`
 	//应用ID
 	AppId string  `json:"app_id"`
 	//用户openID
@@ -33,9 +31,6 @@ type TradeMsg struct {
 	Remark string `json:"remark"`
 	//交易通知地址
 	NotifyUrl string `json:"notify_url"`
-
-	//是否必须一次付清
-	NoOnce int `json:"no_once"`
 
 }
 

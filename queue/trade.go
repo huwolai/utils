@@ -13,6 +13,8 @@ type TradeMsg struct {
 	TradeNo string `json:"trade_no"`
 	//第三方系统中的交易号
 	OutTradeNo string `json:"out_trade_no"`
+	//第三方交易类型
+	OutTradeType string `json:"out_trade_type"`
 	// 备用数据
 	Memo string  `json:"memo"`
 	//预付款代号

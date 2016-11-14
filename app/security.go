@@ -47,8 +47,7 @@ func Auth(req *http.Request) (*AppSign,error)  {
 	//从缓存中获取APP信息
 	app :=CacheAppWithAppId(appId)
 	if app==nil{
-		var dbApp *App
-		_,err := db.NewSession().Select("id","app_id","app_key","app_name","app_desc","status").From("qyx_app").Where("app_id=? and status=?",appId,"1").LoadStructs(&dbApp)
+		 dbApp,err := QueryAppWithId(appId)
 		if err!=nil{
 			log.Error(err)
 			return nil,err
@@ -102,6 +101,16 @@ func Auth(req *http.Request) (*AppSign,error)  {
 	return appSign,nil;
 }
 
+func QueryAppWithId(id string) (*App,error)  {
+	var dbApp *App
+	_,err := db.NewSession().Select("id","app_id","app_key","app_name","app_desc","status").From("qyx_app").Where("app_id=? and status=?",id,"1").LoadStructs(&dbApp)
+	if err!=nil{
+		log.Error(err)
+		return nil,err
+	}
+
+	return dbApp,nil
+}
 
 //在请求中获取AppId
 func GetParamInRequest(key string,req *http.Request) string  {

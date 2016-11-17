@@ -88,6 +88,11 @@ func ToJson(obj interface{})  (string,error){
 	return string(jsonData),nil
 }
 
+func ToJson2(obj interface{})  (string){
+	json,err := ToJson(obj)
+	CheckErr(err)
+	return json
+}
 func WriteJsonStr(w io.Writer,json string) {
 	if json=="" {
 		io.WriteString(w,"{}")

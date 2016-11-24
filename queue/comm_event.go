@@ -78,7 +78,7 @@ func PublishCommEvent(event CommEvent) error  {
 }
 
 //消费订单事件
-func ConsumeEvent(fn func(event *CommEvent, dv amqp.Delivery))  {
+func ConsumeCommEvent(fn func(event *CommEvent, dv amqp.Delivery))  {
 	if commEventChannel==nil{
 		commEventChannel  =createCommEventQueue()
 	}

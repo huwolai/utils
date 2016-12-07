@@ -90,7 +90,11 @@ func ConsumeCommEvent(fn func(event *CommEvent, dv amqp.Delivery))  {
 
 			for d := range msgs {
 				var request *CommEvent
-				util.ReadJsonByByte(d.Body,&request)
+				err = util.ReadJsonByByte(d.Body,&request)
+				if err!=nil{
+					log.Error(err)
+					return
+				}
 				fn(request,d)
 			}
 		}()

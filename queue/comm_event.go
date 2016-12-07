@@ -34,14 +34,14 @@ func NewCommEvent() CommEvent  {
 }
 
 //创建请求生产者
-func createCommEventQueue() *amqp.Channel {
+func createCommEventQueue(queueName string) *amqp.Channel {
 	name :="commevent"
 	commEventChannel = GetChannel()
 	//声明一个 Exchange
 	err := commEventChannel.ExchangeDeclare(name+"Ex", "topic", true, false, false, false, nil)
 	util.CheckErr(err)
 	//声明一个声明一个 Queue
-	queue,err := commEventChannel.QueueDeclare(name+"Queue",true,false,false,false,nil)
+	queue,err := commEventChannel.QueueDeclare(queueName,true,false,false,false,nil)
 	util.CheckErr(err)
 	//将队里绑定到对应的Exchange
 	err = commEventChannel.QueueBind(queue.Name,name,name+"Ex",false,nil)
@@ -52,8 +52,13 @@ func createCommEventQueue() *amqp.Channel {
 
 //发布订单事件
 func PublishCommEvent(event CommEvent) error  {
+
+	name :="commevent"
 	if commEventChannel==nil{
-		commEventChannel  =createCommEventQueue()
+		commEventChannel = GetChannel()
+		//声明一个 Exchange
+		err := commEventChannel.ExchangeDeclare(name+"Ex", "topic", true, false, false, false, nil)
+		util.CheckErr(err)
 	}
 
 	if event.Header.Version=="" {
@@ -65,7 +70,7 @@ func PublishCommEvent(event CommEvent) error  {
 		log.Error(err)
 		return err
 	}
-	name :="commevent"
+
 	msg := amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		Timestamp:    time.Now(),
@@ -78,12 +83,11 @@ func PublishCommEvent(event CommEvent) error  {
 }
 
 //消费订单事件
-func ConsumeCommEvent(fn func(event *CommEvent, dv amqp.Delivery))  {
+func ConsumeCommEvent(queueName string,fn func(event *CommEvent, dv amqp.Delivery))  {
 	if commEventChannel==nil{
-		commEventChannel  =createCommEventQueue()
+		commEventChannel  =createCommEventQueue(queueName)
 	}
-	name :="commevent"
-	msgs, err := commEventChannel.Consume(name+"Queue", "", false, false, false, false, nil)
+	msgs, err := commEventChannel.Consume(queueName, "", false, false, false, false, nil)
 
 	if err==nil{
 		go func() {

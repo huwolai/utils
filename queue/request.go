@@ -48,7 +48,7 @@ func ConsumeRequestMsg(fn func(requestModel *RequestModel, dv amqp.Delivery)) {
 	if requestChannel==nil{
 		requestChannel  =createRequestExchange()
 	}
-	msgs, err := requestChannel.Consume("requestDQueue", "", true, false, false, false, nil)
+	msgs, err := requestChannel.Consume("requestDQueue", "", false, false, false, false, nil)
 
 	if err==nil{
 		go func() {

@@ -34,7 +34,7 @@ func NewCommEvent() CommEvent  {
 }
 
 //创建请求生产者
-func createCommEventQueue(queueName string) *amqp.Channel {
+func createCommEventQueue(queueName string,routeKey string) *amqp.Channel {
 	name :="commevent"
 	commEventChannel = GetChannel()
 	//声明一个 Exchange
@@ -44,15 +44,13 @@ func createCommEventQueue(queueName string) *amqp.Channel {
 	queue,err := commEventChannel.QueueDeclare(queueName,true,false,false,false,nil)
 	util.CheckErr(err)
 	//将队里绑定到对应的Exchange
-	err = commEventChannel.QueueBind(queue.Name,name,name+"Ex",false,nil)
+	err = commEventChannel.QueueBind(queue.Name,routeKey,name+"Ex",false,nil)
 	util.CheckErr(err)
 
 	return  commEventChannel
 }
 
-//发布订单事件
-func PublishCommEvent(event CommEvent) error  {
-
+func PublishCommEventWithRouteKey(routeKey string,event CommEvent) error  {
 	name :="commevent"
 	if commEventChannel==nil{
 		commEventChannel = GetChannel()
@@ -77,15 +75,27 @@ func PublishCommEvent(event CommEvent) error  {
 		ContentType:  "application/json",
 		Body:         msgbytes,
 	}
-	err = commEventChannel.Publish(name+"Ex", name, false, false, msg)
+	err = commEventChannel.Publish(name+"Ex", routeKey, false, false, msg)
 
 	return err
 }
 
-//消费订单事件
+//发布事件
+func PublishCommEvent(event CommEvent) error  {
+	name :="commevent"
+	return PublishCommEventWithRouteKey(name,event)
+}
+
+//消费事件
 func ConsumeCommEvent(queueName string,fn func(event *CommEvent, dv amqp.Delivery))  {
+	name :="commevent"
+	ConsumeCommEventWithRouteKey(queueName,name,fn)
+}
+
+//消费事件
+func ConsumeCommEventWithRouteKey(queueName string,routeKey string,fn func(event *CommEvent, dv amqp.Delivery))  {
 	if commEventChannel==nil{
-		commEventChannel  =createCommEventQueue(queueName)
+		commEventChannel  =createCommEventQueue(queueName,routeKey)
 	}
 	msgs, err := commEventChannel.Consume(queueName, "", false, false, false, false, nil)
 

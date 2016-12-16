@@ -94,7 +94,7 @@ func QueryRoles(appId string) ([]*Role,error)  {
 //是否有角色
 func HasRoles(roles []string,openId string,appId string) bool  {
 	var count int64
-	err :=db.NewSession().Select("count(*)").From("qyx_role").Where("open_id=?",openId).Where("role in ?",roles).Where("app_id=?",appId).LoadValue(&count)
+	err :=db.NewSession().Select("count(*)").From("qyx_role_user").Where("open_id=?",openId).Where("role in ?",roles).Where("app_id=?",appId).LoadValue(&count)
 	util.CheckErr(err)
 	if count>0 {
 		return true
@@ -105,7 +105,7 @@ func HasRoles(roles []string,openId string,appId string) bool  {
 //是否有角色
 func HasRole(role string,openId string,appId string) bool  {
 	var count int64
-	err :=db.NewSession().Select("count(*)").From("qyx_role").Where("open_id=?",openId).Where("role=?",role).Where("app_id=?",appId).LoadValue(&count)
+	err :=db.NewSession().Select("count(*)").From("qyx_role_user").Where("open_id=?",openId).Where("role=?",role).Where("app_id=?",appId).LoadValue(&count)
 	util.CheckErr(err)
 	if count>0 {
 		return true

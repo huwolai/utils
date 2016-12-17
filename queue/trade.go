@@ -100,7 +100,7 @@ func ConsumeTradeMsg(fn func(tradeMsg *TradeMsg, dv amqp.Delivery)) {
 	if tradeChannel==nil{
 		tradeChannel  =createTradeExchange()
 	}
-	msgs, err := tradeChannel.Consume("tradeDQueue", "", true, false, false, false, nil)
+	msgs, err := tradeChannel.Consume("tradeDQueue", "", false, false, false, false, nil)
 
 	if err==nil{
 		go func() {

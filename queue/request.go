@@ -81,7 +81,9 @@ func PublishRequestMsgOfDelay(request *RequestModel,delaySec int) error {
 	if requestChannel==nil{
 		requestChannel = GetChannel()
 		//声明一个 Exchange
-		err := requestChannel.ExchangeDeclare("requestEx", "topic", true, false, false, false, nil)
+		err := requestChannel.ExchangeDeclare("requestEx", "x-delayed-message", true, false, false, false, map[string]interface{}{
+			"x-delayed-type":"topic",
+		})
 		util.CheckErr(err)
 	}
 

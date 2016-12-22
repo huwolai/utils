@@ -3,9 +3,9 @@ package queue
 import (
 	"github.com/streadway/amqp"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
-	"log"
 	"encoding/json"
 	"time"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type RequestModel struct  {
@@ -55,12 +55,16 @@ func ConsumeRequestMsg(fn func(requestModel *RequestModel, dv amqp.Delivery)) {
 
 			for d := range msgs {
 				var request *RequestModel
-				util.ReadJsonByByte(d.Body,&request)
+				err = util.ReadJsonByByte(d.Body,&request)
+				if err!=nil{
+					log.Error(err)
+					return
+				}
 				fn(request,d)
 			}
 		}()
 	}else{
-		log.Println("the Consume is error!",err)
+		log.Error("the Consume is error!",err)
 	}
 
 }
@@ -80,7 +84,7 @@ func PublishRequestMsgOfDelay(request *RequestModel,delaySec int) error {
 
 	msgbytes,err := json.Marshal(request)
 	if err!=nil{
-		log.Println("TradeMsg convert to json is  Fail!")
+		log.Error("TradeMsg convert to json is  Fail!")
 		return err
 	}
 	delay :=int64(delaySec*1000)

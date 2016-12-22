@@ -4,8 +4,8 @@ import (
 	"github.com/streadway/amqp"
 	"time"
 	"encoding/json"
-	"log"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 type TradeMsg struct {
 
@@ -70,7 +70,7 @@ func PublishTradeMsgOfDelay(tradeMsg *TradeMsg,delaySec int) error {
 
 	msgbytes,err := json.Marshal(tradeMsg)
 	if err!=nil{
-		log.Println("TradeMsg convert to json is  Fail!")
+		log.Error("TradeMsg convert to json is  Fail!")
 		return err
 	}
 	delay :=int64(delaySec*1000)
@@ -107,12 +107,16 @@ func ConsumeTradeMsg(fn func(tradeMsg *TradeMsg, dv amqp.Delivery)) {
 
 			for d := range msgs {
 				var tradMsg *TradeMsg
-				util.ReadJsonByByte(d.Body,&tradMsg)
+				err := util.ReadJsonByByte(d.Body,&tradMsg)
+				if err!=nil{
+					log.Error(err)
+					return
+				}
 				fn(tradMsg,d)
 			}
 		}()
 	}else{
-		log.Println("the Consume is error!",err)
+		log.Error("the Consume is error!",err)
 	}
 
 }

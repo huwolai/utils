@@ -23,20 +23,20 @@ func NewRequestModel() *RequestModel  {
 var requestChannel *amqp.Channel
 
 //创建请求生产者
-func createRequestExchange() *amqp.Channel {
+func createRequestExchange(queueName string) *amqp.Channel {
 
 
 	requestChannel = GetChannel()
 	//声明一个trade Exchange
-	err := requestChannel.ExchangeDeclare("requestDEx", "x-delayed-message", true, false, false, false, map[string]interface{}{
-		"x-delayed-type":"direct",
+	err := requestChannel.ExchangeDeclare("requestEx", "x-delayed-message", true, false, false, false, map[string]interface{}{
+		"x-delayed-type":"topic",
 	})
 	util.CheckErr(err)
 	//声明一个声明一个trade Queue
-	queue,err := requestChannel.QueueDeclare("requestDQueue",true,false,false,false,nil)
+	queue,err := requestChannel.QueueDeclare(queueName,true,false,false,false,nil)
 	util.CheckErr(err)
 	//将队里绑定到对应的Exchange
-	err = requestChannel.QueueBind(queue.Name,"requestD","requestDEx",false,nil)
+	err = requestChannel.QueueBind(queue.Name,"http.request","requestEx",false,nil)
 	util.CheckErr(err)
 
 
@@ -44,11 +44,11 @@ func createRequestExchange() *amqp.Channel {
 }
 
 //消费请求消息
-func ConsumeRequestMsg(fn func(requestModel *RequestModel, dv amqp.Delivery)) {
+func ConsumeRequestMsg(queueName string,fn func(requestModel *RequestModel, dv amqp.Delivery)) {
 	if requestChannel==nil{
-		requestChannel  =createRequestExchange()
+		requestChannel  =createRequestExchange(queueName)
 	}
-	msgs, err := requestChannel.Consume("requestDQueue", "", false, false, false, false, nil)
+	msgs, err := requestChannel.Consume(queueName, "", false, false, false, false, nil)
 
 	if err==nil{
 		go func() {
@@ -79,7 +79,10 @@ func PublishRequestMsg(requestModel *RequestModel) error  {
 //delaySec 延迟发送时间
 func PublishRequestMsgOfDelay(request *RequestModel,delaySec int) error {
 	if requestChannel==nil{
-		requestChannel  =createRequestExchange()
+		requestChannel = GetChannel()
+		//声明一个 Exchange
+		err := requestChannel.ExchangeDeclare("requestEx", "topic", true, false, false, false, nil)
+		util.CheckErr(err)
 	}
 
 	msgbytes,err := json.Marshal(request)
@@ -97,7 +100,7 @@ func PublishRequestMsgOfDelay(request *RequestModel,delaySec int) error {
 		ContentType:  "text/plain",
 		Body:         msgbytes,
 	}
-	err = requestChannel.Publish("requestDEx", "requestD", false, false, msg)
+	err = requestChannel.Publish("requestEx", "http.request", false, false, msg)
 
 	return err
 }

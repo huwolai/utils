@@ -90,6 +90,37 @@ func AuthAndOpenId(openId string,req *http.Request) (*Security,error)  {
 	return  sec,nil
 }
 
+func AuthResource(resource string,req *http.Request)(se *Security,statusCode int,err error){
+	sec,err := Auth(req)
+	if err!=nil{
+		return nil,http.StatusUnauthorized,err
+	}
+	appId := app.GetAppIdInRequest(req)
+	hasRes := HasResourceWithOpenId(resource,sec.UserSecurity.OpenId,appId)
+	if !hasRes{
+		return sec,http.StatusForbidden,errors.New("用户没有此资源的访问权限！")
+	}
+
+	return sec,http.StatusOK,nil
+}
+//资源认证
+func AuthResourceWithOpenId(resource string,openId string,req *http.Request)(se *Security,statusCode int,err error)  {
+	sec,err := AuthAndOpenId(openId,req)
+	if err!=nil{
+		return nil,http.StatusUnauthorized,err
+	}
+	if !OpenIdIsOk(openId,sec) {//用户不被允许
+		return nil,http.StatusForbidden,errors.New("用户不被允许操作！")
+	}
+	appId := app.GetAppIdInRequest(req)
+	hasRes := HasResourceWithOpenId(resource,openId,appId)
+	if !hasRes{
+		return sec,http.StatusForbidden,errors.New("用户没有此资源的访问权限！")
+	}
+
+	return sec,http.StatusOK,nil
+}
+
 //open_id是否被允许
 func OpenIdIsOk(openId string,sec *Security) bool  {
 

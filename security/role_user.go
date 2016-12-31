@@ -76,6 +76,13 @@ func RoleUserList(c *gin.Context)  {
 
 //-------------------------------------  db ------------------------------
 
+//删除用户的角色
+func DeleteRoleUser(role,openId,appId string,tx *dbr.Tx) error {
+	_,err := tx.DeleteFrom("qyx_role_user").Where("role=? and open_id=? and app_id=?",role,openId,appId).Exec()
+
+	return err
+}
+
 func QueryRoleUsers(openId,appId string) ([]*RoleUser,error)  {
 	var rus  []*RoleUser
 	_,err :=db.NewSession().Select("*").From("qyx_role_user").Where("open_id=? and app_id=?",openId,appId).LoadStructs(&rus)

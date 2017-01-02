@@ -121,6 +121,7 @@ var userResourceCache = map[string][]*RoleResource{}
 
 func HasResourceWithOpenId(resource string,openId,appId string) bool {
 
+
 	reosurceActions :=strings.Split(resource,":")
 	if len(reosurceActions)!=2 {
 		util.CheckErr(errors.New("资源输入有误！"))
@@ -136,10 +137,13 @@ func HasResourceWithOpenId(resource string,openId,appId string) bool {
 	}
 
 	if roleResources==nil||len(roleResources)<=0{
+		log.Warn("用户没有角色资源！")
 		return false
 	}
 
 	for _,roleResource :=range roleResources{
+		log.Info("roleResource.ResourceId=",roleResource.ResourceId)
+		log.Info("roleResource.Action=",roleResource.Action)
 		if roleResource.ResourceId == reosurceActions[0] {
 			if roleResource.Action == reosurceActions[1]{
 				return true

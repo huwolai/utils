@@ -145,8 +145,6 @@ func HasResourceWithOpenId(resource string,openId,appId string) bool {
 	}
 
 	for _,roleResource :=range roleResources{
-		log.Info("roleResource.ResourceId=",roleResource.ResourceId)
-		log.Info("roleResource.Action=",roleResource.Action)
 		if roleResource.ResourceId == reosurceActions[0] {
 			if roleResource.Action == reosurceActions[1]{
 				return true

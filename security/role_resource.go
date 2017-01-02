@@ -130,8 +130,9 @@ func HasResourceWithOpenId(resource string,openId,appId string) bool {
 		return false
 	}
 	roleResources := userResourceCache[openId+"-"+appId]
+	var err error
 	if roleResources==nil{
-		roleResources,err := QueryRoleResources(openId,appId)
+		roleResources,err = QueryUserRoleResource(openId,appId)
 		util.CheckErr(err)
 		if roleResources!=nil&&len(roleResources)>0{
 			userResourceCache[openId+"-"+appId] = roleResources

@@ -121,7 +121,9 @@ var userResourceCache = map[string][]*RoleResource{}
 
 func HasResourceWithOpenId(resource string,openId,appId string) bool {
 
-
+	log.Info("访问应用:",appId)
+	log.Info("访问用户:",openId)
+	log.Info("访问资源:",resource)
 	reosurceActions :=strings.Split(resource,":")
 	if len(reosurceActions)!=2 {
 		util.CheckErr(errors.New("资源输入有误！"))

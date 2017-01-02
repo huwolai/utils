@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"crypto/md5"
 	"time"
+	"encoding/hex"
 )
 
 const (
@@ -26,9 +27,12 @@ func AddUser(username string,password string,nickname string,regtype int) (map[s
 	md5Ctx := md5.New()
 	md5Ctx.Write([]byte(signStr))
 	sign := md5Ctx.Sum(nil)
+	signS := hex.EncodeToString(sign)
+
 	md5Ctx = md5.New()
-	md5Ctx.Write(sign)
+	md5Ctx.Write([]byte(signS))
 	sign = md5Ctx.Sum(nil)
+	signS = hex.EncodeToString(sign)
 
 	imanagerUrl :=getImanagerPhpUrl()
 
@@ -37,7 +41,7 @@ func AddUser(username string,password string,nickname string,regtype int) (map[s
 		"password": password,
 		"nickname": nickname,
 		"time": fmt.Sprintf("%d",tm),
-		"sign": string(sign),
+		"sign": signS,
 		"regtype": fmt.Sprintf("%d",regtype),
 	}
 	response,err :=network.Get(imanagerUrl+"/Cust/Init/addUser",queryParam,nil)

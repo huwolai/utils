@@ -120,7 +120,10 @@ func AddGroupMember(_custId,_token string,groupNo string,custids string) error  
 }
 
 func getImanagerPhpUrl() string {
-
-	return config.GetValue("imanager_api_url").ToString()
+	 url := config.GetValue("php_api_url").ToString()
+	if url=="" {
+		return "http://phpim.qiyunxin.svc.cluster.local:8080"
+	}
+	return url
 }
 

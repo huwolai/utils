@@ -82,7 +82,7 @@ func RoleResourceList(c *gin.Context)  {
 
 func QueryRoleResources(role,appId string) ([]*RoleResource,error)  {
 	var roleresources []*RoleResource
-	_,err := db.NewSession().Select("*").From("role_resource").Where("app_id=? and role=?",appId,role).LoadStructs(&roleresources)
+	_,err := db.NewSession().Select("*").From("qyx_role_resource").Where("app_id=? and role=?",appId,role).LoadStructs(&roleresources)
 	return roleresources,err
 }
 
@@ -154,7 +154,7 @@ func HasResourceWithOpenId(resource string,openId,appId string) bool {
 //添加角色资源
 func InsertRoleResourceTx(rrs *RoleResource,tx *dbr.Tx) error  {
 
-	_,err :=tx.InsertInto("role_resource").Columns("app_id","role_id","role","resource_id","action","flag","json").Record(rrs).Exec()
+	_,err :=tx.InsertInto("qyx_role_resource").Columns("app_id","role_id","role","resource_id","action","flag","json").Record(rrs).Exec()
 
 	return err
 }

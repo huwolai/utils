@@ -7,6 +7,8 @@ import (
 	"github.com/gocraft/dbr"
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"net/http"
+	"strings"
+	"errors"
 )
 
 type RoleResource struct {
@@ -75,9 +77,12 @@ func RoleResourceList(c *gin.Context)  {
 	c.JSON(http.StatusOK,roleresources)
 }
 
+
+//-----------------------------------  db ----------------------------------------------------
+
 func QueryRoleResources(role,appId string) ([]*RoleResource,error)  {
 	var roleresources []*RoleResource
-	_,err := db.NewSession().Select("*").From("role_resource").Where("app_id=? and role=?",appId,role).LoadStructs(&roleresources)
+	_,err := db.NewSession().Select("*").From("qyx_role_resource").Where("app_id=? and role=?",appId,role).LoadStructs(&roleresources)
 	return roleresources,err
 }
 
@@ -100,13 +105,61 @@ func InsertRoleResources(rrss []*RoleResource) error {
 			return err
 		}
 	}
-
 	return tx.Commit()
 }
 
+//查询用户角色资源
+func QueryUserRoleResource(openId,appId string) ([]*RoleResource,error)  {
+	var roleResources []*RoleResource
+	builder:=db.NewSession().Select("qyx_role_resource.*").From("qyx_role").Join("qyx_role_resource","qyx_role.role = qyx_role_resource.role").Join("qyx_role_user","qyx_role_user.role = qyx_role_resource.role")
+	_,err := builder.Where("qyx_role_user.open_id=? and qyx_role_user.app_id=?",openId,appId).LoadStructs(&roleResources)
+	return roleResources,err
+}
+
+var userResourceCache = map[string][]*RoleResource{}
+
+
+func HasResourceWithOpenId(resource string,openId,appId string) bool {
+
+	log.Info("访问应用:",appId)
+	log.Info("访问用户:",openId)
+	log.Info("访问资源:",resource)
+	reosurceActions :=strings.Split(resource,":")
+	if len(reosurceActions)!=2 {
+		util.CheckErr(errors.New("资源输入有误！"))
+		return false
+	}
+	roleResources := userResourceCache[openId+"-"+appId]
+	var err error
+	if roleResources==nil{
+		roleResources,err = QueryUserRoleResource(openId,appId)
+		util.CheckErr(err)
+		if roleResources!=nil&&len(roleResources)>0{
+			userResourceCache[openId+"-"+appId] = roleResources
+		}
+	}
+
+	if roleResources==nil||len(roleResources)<=0{
+		log.Warn("用户没有角色资源！")
+		return false
+	}
+
+	for _,roleResource :=range roleResources{
+		if roleResource.ResourceId == reosurceActions[0] {
+			if roleResource.Action == reosurceActions[1]{
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+
+//添加角色资源
 func InsertRoleResourceTx(rrs *RoleResource,tx *dbr.Tx) error  {
 
-	_,err :=tx.InsertInto("role_resource").Columns("app_id","role_id","role","resource_id","action","flag","json").Record(rrs).Exec()
+	_,err :=tx.InsertInto("qyx_role_resource").Columns("app_id","role_id","role","resource_id","action","flag","json").Record(rrs).Exec()
 
 	return err
 }

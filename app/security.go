@@ -89,6 +89,7 @@ func Auth(req *http.Request) (*AppSign,error)  {
 	}
 
 	signStr:= fmt.Sprintf("%s%s%s",app.AppKey,noncestr,timestamp)
+	log.Info("signStr=",signStr)
 	wantSign :=fmt.Sprintf("%X",md5.Sum([]byte(signStr)))
 
 	if gotSign!=wantSign {

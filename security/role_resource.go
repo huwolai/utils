@@ -111,7 +111,7 @@ func InsertRoleResources(rrss []*RoleResource) error {
 //查询用户角色资源
 func QueryUserRoleResource(openId,appId string) ([]*RoleResource,error)  {
 	var roleResources []*RoleResource
-	builder:=db.NewSession().Select("qyx_role_resource.*").From("qyx_role").Join("qyx_role_resource","qyx_role_user.role = qyx_role_resource.role").Join("qyx_role_user","qyx_role_user.role = qyx_role_resource.role")
+	builder:=db.NewSession().Select("qyx_role_resource.*").From("qyx_role").Join("qyx_role_resource","qyx_role.role = qyx_role_resource.role").Join("qyx_role_user","qyx_role_user.role = qyx_role_resource.role")
 	_,err := builder.Where("qyx_role_user.open_id=? and qyx_role_user.app_id=?",openId,appId).LoadStructs(&roleResources)
 	return roleResources,err
 }

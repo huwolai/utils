@@ -109,8 +109,9 @@ func ConsumeTradeMsg(fn func(tradeMsg *TradeMsg, dv amqp.Delivery)) {
 				var tradMsg *TradeMsg
 				err := util.ReadJsonByByte(d.Body,&tradMsg)
 				if err!=nil{
+					log.Info("交易数据格式有误！")
 					log.Error(err)
-					return
+					continue
 				}
 				fn(tradMsg,d)
 			}

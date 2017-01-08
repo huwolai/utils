@@ -9,6 +9,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"time"
+	"strings"
 )
 
 const APP_ID_KEY  = "app_id"
@@ -67,7 +68,8 @@ func Auth(req *http.Request) (*AppSign,error)  {
 
 		return nil,errors.New("签名信息(sign)不能为空!");
 	}
-	gotSign := sign
+	signArray := strings.Split(sign,".")
+	gotSign := signArray[0]
 
 	noncestr :=GetParamInRequest("noncestr",req)
 	timestamp :=GetParamInRequest("timestamp",req)
@@ -89,6 +91,7 @@ func Auth(req *http.Request) (*AppSign,error)  {
 	}
 
 	signStr:= fmt.Sprintf("%s%s%s",app.AppKey,noncestr,timestamp)
+	log.Info("signStr=",signStr)
 	wantSign :=fmt.Sprintf("%X",md5.Sum([]byte(signStr)))
 
 	if gotSign!=wantSign {

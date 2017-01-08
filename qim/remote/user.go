@@ -5,34 +5,23 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/network"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"net/http"
-	"fmt"
-	"crypto/md5"
-	"time"
-	"encoding/hex"
 )
 
-const (
-	//手机注册
-	REG_TYPE_MOBILE = 1
-	//邮箱注册
-	REG_TYPE_EMAIL = 2
-)
 
-//添加用户 regtype 1.手机注册 2.邮箱注册
-func AddUser(username string,password string,nickname string,regtype int) (map[string]interface{},error)  {
+func AddUser(username string,mobile string,email string,password string,nickname string) (map[string]interface{},error)  {
 
-	//签名
-	tm := time.Now().Unix()
-	signStr := username+"_"+fmt.Sprintf("%d",tm)
-	md5Ctx := md5.New()
-	md5Ctx.Write([]byte(signStr))
-	sign := md5Ctx.Sum(nil)
-	signS := hex.EncodeToString(sign)
-
-	md5Ctx = md5.New()
-	md5Ctx.Write([]byte(signS))
-	sign = md5Ctx.Sum(nil)
-	signS = hex.EncodeToString(sign)
+	////签名
+	//tm := time.Now().Unix()
+	//signStr := username+"_"+fmt.Sprintf("%d",tm)
+	//md5Ctx := md5.New()
+	//md5Ctx.Write([]byte(signStr))
+	//sign := md5Ctx.Sum(nil)
+	//signS := hex.EncodeToString(sign)
+	//
+	//md5Ctx = md5.New()
+	//md5Ctx.Write([]byte(signS))
+	//sign = md5Ctx.Sum(nil)
+	//signS = hex.EncodeToString(sign)
 
 	imanagerUrl :=getImanagerPhpUrl()
 
@@ -40,9 +29,8 @@ func AddUser(username string,password string,nickname string,regtype int) (map[s
 		"username": username,
 		"password": password,
 		"nickname": nickname,
-		"time": fmt.Sprintf("%d",tm),
-		"sign": signS,
-		"regtype": fmt.Sprintf("%d",regtype),
+		"email": email,
+		"mobile": mobile,
 	}
 	response,err :=network.Get(imanagerUrl+"/Cust/Init/addUser",queryParam,nil)
 	if err!=nil{

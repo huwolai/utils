@@ -20,6 +20,10 @@ func ToyyyyMMdd(tm time.Time) string {
 	return tm.Format("20060102")
 }
 
+func PareTimeStrForYYYYMMdd(timeStr string) (time.Time,error)  {
+	return time.Parse("20060102",timeStr)
+}
+
 //带-的日期
 func Toyyyy_MM_dd(tm time.Time) string {
 

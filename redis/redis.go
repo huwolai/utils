@@ -131,7 +131,12 @@ func (self *RedisConn) GetString(key string)  (string,error){
 	conn := self.getConn();
 	defer self.putConn(conn)
 
-	result,err:=conn.Cmd("get",key).Str()
+	reply := conn.Cmd("get",key)
+	log.Println(reply.Type)
+	if reply.Type== redis.NilReply {
+		return "",nil
+	}
+	result,err:=reply.Str()
 
 	return result,err
 

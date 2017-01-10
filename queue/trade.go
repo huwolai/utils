@@ -8,7 +8,8 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 type TradeMsg struct {
-
+	//签名
+	Sign string `json:"sign"`
 	//交易号
 	TradeNo string `json:"trade_no"`
 	//第三方系统中的交易号
@@ -24,7 +25,7 @@ type TradeMsg struct {
 	//用户openID
 	OpenId string `json:"open_id"`
 	//交易时间
-	TradeTime time.Time `json:"trade_time"`
+	TradeTime int64 `json:"trade_time"`
 	//交易金额
 	Amount int64  `json:"amount"`
 	//交易标题

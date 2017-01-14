@@ -34,7 +34,7 @@ func CheckErr(err error)  {
 
 func ResponseError400AndForward(w http.ResponseWriter,msg string,forward string){
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	err := ResultError{http.StatusBadRequest, msg}
+	err := ResultErrorAndForward{http.StatusBadRequest, msg,forward}
 	log.Error(msg)
 	w.WriteHeader(http.StatusBadRequest)
 	WriteJson(w,err)
@@ -185,7 +185,7 @@ type ResultErrorAndForward struct {
 	ErrCode int `json:"err_code"`
 	ErrMsg string `json:"err_msg"`
 	//跳转
-	Forward string `json:"forward"`
+	Forward string `json:"forward,omitempty"`
 
 }
 

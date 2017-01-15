@@ -11,19 +11,17 @@ import (
 
 var client *raven.Client
 
-func Setup(dsn string, tags map[string]string) error  {
-	var err error
-	client,err = raven.NewWithTags(dsn,tags)
-	if err!=nil{
-		return err
-	}
-	return nil
+func Setup(dsn string) error  {
+	return raven.SetDSN(dsn)
 }
 
 
 func Recovery(onlyCrashes bool) gin.HandlerFunc {
+
 	return func(c *gin.Context) {
 		defer func() {
+
+
 			flags := map[string]string{
 				"endpoint": c.Request.RequestURI,
 			}
@@ -31,7 +29,7 @@ func Recovery(onlyCrashes bool) gin.HandlerFunc {
 				debug.PrintStack()
 				rvalStr := fmt.Sprint(rval)
 				packet := raven.NewPacket(rvalStr, raven.NewException(errors.New(rvalStr), raven.NewStacktrace(2, 3, nil)))
-				client.Capture(packet, flags)
+				raven.Capture(packet, flags)
 				c.Writer.WriteHeader(http.StatusInternalServerError)
 			}
 			if !onlyCrashes {

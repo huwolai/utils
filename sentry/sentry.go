@@ -15,9 +15,21 @@ func Setup(dsn string) error  {
 	return raven.SetDSN(dsn)
 }
 
+//重要错误
+func CaptureMajorErr(errStr string,flag string)  {
+	packet := raven.NewPacket(errStr, raven.NewException(errors.New(errStr), raven.NewStacktrace(2, 3, nil)))
+	raven.Capture(packet, map[string]string{
+		"type": flag,
+	})
+
+}
+
+func CaptureErr(err error)  {
+
+	raven.CaptureError(err,nil)
+}
 
 func Recovery(onlyCrashes bool) gin.HandlerFunc {
-
 	return func(c *gin.Context) {
 		defer func() {
 

@@ -15,7 +15,7 @@ func SetupAMQP(url string,restartCallbackFuc func ())  {
 	if url=="" {
 		url ="amqp://guest:guest@localhost:5672/"
 	}
-	restConn(url,restartCallbackFuc)
+	go restConn(url,restartCallbackFuc)
 	//var err error
 	//connection, err = amqp.Dial(url)
 	//util.CheckErr(err)
@@ -45,6 +45,7 @@ func restConn(url string,restartCallbackFuc func ())  {
 		log.Error(err)
 
 	}else{
+		log.Info("amq连接成功！")
 		restartCallbackFuc()
 		errChanel := make( chan *amqp.Error)
 		connection.NotifyClose(errChanel)

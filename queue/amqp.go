@@ -46,7 +46,10 @@ func restConn(url string,restartCallbackFuc func ())  {
 
 	}else{
 		log.Info("amq连接成功！")
-		restartCallbackFuc()
+		if restartCallbackFuc!=nil{
+			restartCallbackFuc()
+		}
+
 		errChanel := make( chan *amqp.Error)
 		connection.NotifyClose(errChanel)
 		select {

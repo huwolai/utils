@@ -51,7 +51,7 @@ type AccountEventContent struct  {
 //创建请求生产者
 func createAccountQueue() *amqp.Channel {
 	name :="account"
-	requestChannel = GetChannel()
+	requestChannel := GetChannel()
 	//声明一个trade Exchange
 	err := requestChannel.ExchangeDeclare(name+"Ex", "topic", true, false, false, false, nil)
 	util.CheckErr(err)
@@ -67,9 +67,7 @@ func createAccountQueue() *amqp.Channel {
 
 //发布订单事件
 func PublishAccountEvent(event *AccountEvent) error  {
-	if requestChannel==nil{
-		requestChannel  =createAccountQueue()
-	}
+	requestChannel  :=createAccountQueue()
 
 	if event.Version=="" {
 		event.Version = EVENT_VERSION_V1
@@ -94,9 +92,7 @@ func PublishAccountEvent(event *AccountEvent) error  {
 
 //消费订单事件
 func ConsumeAccountEvent(consumer string,fn func(accountEvent *AccountEvent, dv amqp.Delivery))  {
-	if requestChannel==nil{
-		requestChannel  =createAccountQueue()
-	}
+	requestChannel  :=createAccountQueue()
 	name :="account"
 	msgs, err := requestChannel.Consume(name+"Queue", consumer, false, false, false, false, nil)
 

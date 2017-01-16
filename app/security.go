@@ -9,6 +9,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/db"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"time"
+	"strings"
 )
 
 const APP_ID_KEY  = "app_id"
@@ -47,8 +48,7 @@ func Auth(req *http.Request) (*AppSign,error)  {
 	//从缓存中获取APP信息
 	app :=CacheAppWithAppId(appId)
 	if app==nil{
-		var dbApp *App
-		_,err := db.NewSession().Select("id","app_id","app_key","app_name","app_desc","status").From("qyx_app").Where("app_id=? and status=?",appId,"1").LoadStructs(&dbApp)
+		 dbApp,err := QueryAppWithId(appId)
 		if err!=nil{
 			log.Error(err)
 			return nil,err
@@ -68,7 +68,8 @@ func Auth(req *http.Request) (*AppSign,error)  {
 
 		return nil,errors.New("签名信息(sign)不能为空!");
 	}
-	gotSign := sign
+	signArray := strings.Split(sign,".")
+	gotSign := signArray[0]
 
 	noncestr :=GetParamInRequest("noncestr",req)
 	timestamp :=GetParamInRequest("timestamp",req)
@@ -90,6 +91,7 @@ func Auth(req *http.Request) (*AppSign,error)  {
 	}
 
 	signStr:= fmt.Sprintf("%s%s%s",app.AppKey,noncestr,timestamp)
+	log.Info("signStr=",signStr)
 	wantSign :=fmt.Sprintf("%X",md5.Sum([]byte(signStr)))
 
 	if gotSign!=wantSign {
@@ -102,6 +104,16 @@ func Auth(req *http.Request) (*AppSign,error)  {
 	return appSign,nil;
 }
 
+func QueryAppWithId(id string) (*App,error)  {
+	var dbApp *App
+	_,err := db.NewSession().Select("id","app_id","app_key","app_name","app_desc","status").From("qyx_app").Where("app_id=? and status=?",id,"1").LoadStructs(&dbApp)
+	if err!=nil{
+		log.Error(err)
+		return nil,err
+	}
+
+	return dbApp,nil
+}
 
 //在请求中获取AppId
 func GetParamInRequest(key string,req *http.Request) string  {

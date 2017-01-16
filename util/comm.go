@@ -32,6 +32,14 @@ func CheckErr(err error)  {
 	}
 }
 
+func ResponseError400AndForward(w http.ResponseWriter,msg string,forward string){
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	err := ResultErrorAndForward{http.StatusBadRequest, msg,forward}
+	log.Error(msg)
+	w.WriteHeader(http.StatusBadRequest)
+	WriteJson(w,err)
+}
+
 func ResponseError400(w http.ResponseWriter,msg string){
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	ResponseError(w,http.StatusBadRequest,msg)
@@ -88,6 +96,11 @@ func ToJson(obj interface{})  (string,error){
 	return string(jsonData),nil
 }
 
+func ToJson2(obj interface{})  (string){
+	json,err := ToJson(obj)
+	CheckErr(err)
+	return json
+}
 func WriteJsonStr(w io.Writer,json string) {
 	if json=="" {
 		io.WriteString(w,"{}")
@@ -164,6 +177,15 @@ type ResultError struct {
 
 	ErrCode int `json:"err_code"`
 	ErrMsg string `json:"err_msg"`
+
+}
+
+type ResultErrorAndForward struct {
+
+	ErrCode int `json:"err_code"`
+	ErrMsg string `json:"err_msg"`
+	//跳转
+	Forward string `json:"forward,omitempty"`
 
 }
 

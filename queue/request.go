@@ -3,9 +3,9 @@ package queue
 import (
 	"github.com/streadway/amqp"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
-	"log"
 	"encoding/json"
 	"time"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 
 type RequestModel struct  {
@@ -20,23 +20,22 @@ func NewRequestModel() *RequestModel  {
 	return &RequestModel{}
 }
 
-var requestChannel *amqp.Channel
 
 //创建请求生产者
-func createRequestExchange() *amqp.Channel {
+func createRequestExchange(queueName string) *amqp.Channel {
 
 
-	requestChannel = GetChannel()
+	requestChannel := GetChannel()
 	//声明一个trade Exchange
-	err := requestChannel.ExchangeDeclare("requestDEx", "x-delayed-message", true, false, false, false, map[string]interface{}{
-		"x-delayed-type":"direct",
+	err := requestChannel.ExchangeDeclare("requestEx", "x-delayed-message", true, false, false, false, map[string]interface{}{
+		"x-delayed-type":"topic",
 	})
 	util.CheckErr(err)
 	//声明一个声明一个trade Queue
-	queue,err := requestChannel.QueueDeclare("requestDQueue",true,false,false,false,nil)
+	queue,err := requestChannel.QueueDeclare(queueName,true,false,false,false,nil)
 	util.CheckErr(err)
 	//将队里绑定到对应的Exchange
-	err = requestChannel.QueueBind(queue.Name,"requestD","requestDEx",false,nil)
+	err = requestChannel.QueueBind(queue.Name,"http.request","requestEx",false,nil)
 	util.CheckErr(err)
 
 
@@ -44,23 +43,25 @@ func createRequestExchange() *amqp.Channel {
 }
 
 //消费请求消息
-func ConsumeRequestMsg(fn func(requestModel *RequestModel, dv amqp.Delivery)) {
-	if requestChannel==nil{
-		requestChannel  =createRequestExchange()
-	}
-	msgs, err := requestChannel.Consume("requestDQueue", "", true, false, false, false, nil)
+func ConsumeRequestMsg(queueName string,fn func(requestModel *RequestModel, dv amqp.Delivery)) {
+	requestChannel  :=createRequestExchange(queueName)
+	msgs, err := requestChannel.Consume(queueName, "", false, false, false, false, nil)
 
 	if err==nil{
 		go func() {
 
 			for d := range msgs {
 				var request *RequestModel
-				util.ReadJsonByByte(d.Body,&request)
+				err = util.ReadJsonByByte(d.Body,&request)
+				if err!=nil{
+					log.Error(err)
+					return
+				}
 				fn(request,d)
 			}
 		}()
 	}else{
-		log.Println("the Consume is error!",err)
+		log.Error("the Consume is error!",err)
 	}
 
 }
@@ -74,13 +75,16 @@ func PublishRequestMsg(requestModel *RequestModel) error  {
 
 //delaySec 延迟发送时间
 func PublishRequestMsgOfDelay(request *RequestModel,delaySec int) error {
-	if requestChannel==nil{
-		requestChannel  =createRequestExchange()
-	}
+	requestChannel := GetChannel()
+	//声明一个 Exchange
+	err := requestChannel.ExchangeDeclare("requestEx", "x-delayed-message", true, false, false, false, map[string]interface{}{
+		"x-delayed-type":"topic",
+	})
+	util.CheckErr(err)
 
 	msgbytes,err := json.Marshal(request)
 	if err!=nil{
-		log.Println("TradeMsg convert to json is  Fail!")
+		log.Error("TradeMsg convert to json is  Fail!")
 		return err
 	}
 	delay :=int64(delaySec*1000)
@@ -93,7 +97,7 @@ func PublishRequestMsgOfDelay(request *RequestModel,delaySec int) error {
 		ContentType:  "text/plain",
 		Body:         msgbytes,
 	}
-	err = requestChannel.Publish("requestDEx", "requestD", false, false, msg)
+	err = requestChannel.Publish("requestEx", "http.request", false, false, msg)
 
 	return err
 }

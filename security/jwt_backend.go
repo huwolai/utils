@@ -44,9 +44,22 @@ func InitJWTAuthenticationBackend() *JWTAuthenticationBackend {
 	return authBackendInstance
 }
 
+//认证用户信息
 func AuthUsers(req *http.Request) (*AuthUser,error) {
 
 	return GetAuthUser(req)
+}
+
+//认证用户信息 并且判断openId是否是当前用户的openID
+func AuthUsersAndOpenId(openId string,req *http.Request) (*AuthUser,error) {
+	authuser,err :=GetAuthUser(req)
+	if err!=nil{
+		return authuser,err
+	}
+	if authuser.OpenId !=openId {
+		return nil,errors.New("不是当前用户！")
+	}
+	return authuser,nil
 }
 
 //获取认证用户信息

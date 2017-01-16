@@ -4,27 +4,28 @@ import (
 	"github.com/streadway/amqp"
 	"time"
 	"encoding/json"
-	"log"
 	"gitlab.qiyunxin.com/tangtao/utils/util"
+	"gitlab.qiyunxin.com/tangtao/utils/log"
 )
 type TradeMsg struct {
-
+	//签名
+	Sign string `json:"sign"`
 	//交易号
 	TradeNo string `json:"trade_no"`
-	//交易类型 1.充值 2.普通支出
-	TradeType int `json:"trade_type"`
 	//第三方系统中的交易号
 	OutTradeNo string `json:"out_trade_no"`
+	//第三方交易类型
+	OutTradeType string `json:"out_trade_type"`
+	// 备用数据
+	Memo string  `json:"memo"`
 	//预付款代号
-	Code string `json:"code"`
-	//第三方系统中的交易类型
-	OutTradeType int `json:"out_trade_type"`
+	ImprestCode string `json:"imprest_code"`
 	//应用ID
 	AppId string  `json:"app_id"`
 	//用户openID
 	OpenId string `json:"open_id"`
 	//交易时间
-	TradeTime time.Time `json:"trade_time"`
+	TradeTime int64 `json:"trade_time"`
 	//交易金额
 	Amount int64  `json:"amount"`
 	//交易标题
@@ -34,22 +35,18 @@ type TradeMsg struct {
 	//交易通知地址
 	NotifyUrl string `json:"notify_url"`
 
-	//是否必须一次付清
-	NoOnce int `json:"no_once"`
-
 }
 
 func NewTradeMsg() *TradeMsg  {
 
 	return &TradeMsg{}
 }
-var tradeChannel *amqp.Channel
 
 //创建交易生产者
 func createTradeExchange() *amqp.Channel {
 
 
-	tradeChannel = GetChannel()
+	tradeChannel := GetChannel()
 	//声明一个trade Exchange
 	err := tradeChannel.ExchangeDeclare("tradeDEx", "x-delayed-message", true, false, false, false, map[string]interface{}{
 		"x-delayed-type":"direct",
@@ -67,13 +64,11 @@ func createTradeExchange() *amqp.Channel {
 }
 
 func PublishTradeMsgOfDelay(tradeMsg *TradeMsg,delaySec int) error {
-	if tradeChannel==nil{
-		tradeChannel  =createTradeExchange()
-	}
+	tradeChannel  :=createTradeExchange()
 
 	msgbytes,err := json.Marshal(tradeMsg)
 	if err!=nil{
-		log.Println("TradeMsg convert to json is  Fail!")
+		log.Error("TradeMsg convert to json is  Fail!")
 		return err
 	}
 	delay :=int64(delaySec*1000)
@@ -100,22 +95,25 @@ func PublishTradeMsg(tradeMsg *TradeMsg) error  {
 
 //消费交易消息
 func ConsumeTradeMsg(fn func(tradeMsg *TradeMsg, dv amqp.Delivery)) {
-	if tradeChannel==nil{
-		tradeChannel  =createTradeExchange()
-	}
-	msgs, err := tradeChannel.Consume("tradeDQueue", "", true, false, false, false, nil)
+	tradeChannel  :=createTradeExchange()
+	msgs, err := tradeChannel.Consume("tradeDQueue", "", false, false, false, false, nil)
 
 	if err==nil{
 		go func() {
 
 			for d := range msgs {
 				var tradMsg *TradeMsg
-				util.ReadJsonByByte(d.Body,&tradMsg)
+				err := util.ReadJsonByByte(d.Body,&tradMsg)
+				if err!=nil{
+					log.Info("交易数据格式有误！")
+					log.Error(err)
+					continue
+				}
 				fn(tradMsg,d)
 			}
 		}()
 	}else{
-		log.Println("the Consume is error!",err)
+		log.Error("the Consume is error!",err)
 	}
 
 }

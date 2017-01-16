@@ -9,7 +9,6 @@ import (
 )
 
 const EVENT_VERSION_V1  = "v1"
-var commEventChannel *amqp.Channel
 type CommEvent struct  {
 	//事件头
 	Header CommEventHeader
@@ -36,7 +35,7 @@ func NewCommEvent() CommEvent  {
 //创建请求生产者
 func createCommEventQueue(queueName string,routeKey string) *amqp.Channel {
 	name :="commevent"
-	commEventChannel = GetChannel()
+	commEventChannel := GetChannel()
 	//声明一个 Exchange
 	err := commEventChannel.ExchangeDeclare(name+"Ex", "topic", true, false, false, false, nil)
 	util.CheckErr(err)
@@ -52,12 +51,10 @@ func createCommEventQueue(queueName string,routeKey string) *amqp.Channel {
 
 func PublishCommEventWithRouteKey(routeKey string,event CommEvent) error  {
 	name :="commevent"
-	if commEventChannel==nil{
-		commEventChannel = GetChannel()
-		//声明一个 Exchange
-		err := commEventChannel.ExchangeDeclare(name+"Ex", "topic", true, false, false, false, nil)
-		util.CheckErr(err)
-	}
+	commEventChannel := GetChannel()
+	//声明一个 Exchange
+	err := commEventChannel.ExchangeDeclare(name+"Ex", "topic", true, false, false, false, nil)
+	util.CheckErr(err)
 
 	if event.Header.Version=="" {
 		event.Header.Version = EVENT_VERSION_V1
@@ -94,9 +91,7 @@ func ConsumeCommEvent(queueName string,fn func(event *CommEvent, dv amqp.Deliver
 
 //消费事件
 func ConsumeCommEventWithRouteKey(queueName string,routeKey string,fn func(event *CommEvent, dv amqp.Delivery))  {
-	if commEventChannel==nil{
-		commEventChannel  =createCommEventQueue(queueName,routeKey)
-	}
+	commEventChannel :=createCommEventQueue(queueName,routeKey)
 	msgs, err := commEventChannel.Consume(queueName, "", false, false, false, false, nil)
 
 	if err==nil{

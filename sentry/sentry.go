@@ -11,29 +11,37 @@ import (
 
 var client *raven.Client
 
+var IsStart bool
+
+
 func Setup(dsn string) error  {
+	IsStart = true
 	return raven.SetDSN(dsn)
 }
 
 //重要错误
 func CaptureMajorErr(errStr string,flag string)  {
-	packet := raven.NewPacket(errStr, raven.NewException(errors.New(errStr), raven.NewStacktrace(2, 3, nil)))
-	raven.Capture(packet, map[string]string{
-		"type": flag,
-	})
-
+	if IsStart {
+		packet := raven.NewPacket(errStr, raven.NewException(errors.New(errStr), raven.NewStacktrace(2, 3, nil)))
+		raven.Capture(packet, map[string]string{
+			"type": flag,
+		})
+	}
 }
 
 func CaptureErr(err error)  {
+	if IsStart {
+		raven.CaptureError(err,nil)
+	}
 
-	raven.CaptureError(err,nil)
 }
 
 func Recovery(onlyCrashes bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
-
-
+			if !IsStart {
+				return
+			}
 			flags := map[string]string{
 				"endpoint": c.Request.RequestURI,
 			}

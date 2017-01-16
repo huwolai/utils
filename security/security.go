@@ -44,7 +44,7 @@ func Auth(req *http.Request) (*Security,error) {
 		log.Warn("没有认证信息！")
 		return nil,errors.New("没有认证信息！")
 	}
-	
+
 
 	if securityLevel == SECURITY_LEVEL_APP{//app级别的权限
 		log.Info("APP 认证方式..")

@@ -124,16 +124,20 @@ func AuthResource(resource string,req *http.Request)(se *Security,statusCode int
 
 	return sec,http.StatusOK,nil
 }
-//资源认证
+//资源认证,并且认证OpenId为当前访问token的OpenId
+
+//1. 如果是用户token认证 那么OpenId必须等于Token里的OpenId,并且拥有资源权限。
+//2. 如果是APP认证方式 OpenId不做限制 ,但是OpenId对应的用户必须拥有资源权限才能操作
 func AuthResourceWithOpenId(resource string,openId string,req *http.Request)(se *Security,statusCode int,err error)  {
 	sec,err := AuthAndOpenId(openId,req)
 	if err!=nil{
 		return nil,http.StatusUnauthorized,err
 	}
-	if !OpenIdIsOk(openId,sec) {//用户不被允许
-		return nil,http.StatusForbidden,errors.New("用户不被允许操作！")
-	}
+	//if !OpenIdIsOk(openId,sec) {//用户不被允许
+	//	return nil,http.StatusForbidden,errors.New("用户不被允许操作！")
+	//}
 	appId := app.GetAppIdInRequest(req)
+	//判断用户是否有资源权限
 	hasRes := HasResourceWithOpenId(resource,openId,appId)
 	if !hasRes{
 		return sec,http.StatusForbidden,errors.New("用户没有此资源的访问权限！")
@@ -150,6 +154,7 @@ func OpenIdIsOk(openId string,sec *Security) bool  {
 
 			return true
 		}
+		log.Error("操作的用户open_id:",openId," 认证的open_id:",sec.UserSecurity.OpenId," 不一致！")
 	}
 
 	if sec.Level==SECURITY_LEVEL_APP {

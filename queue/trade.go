@@ -41,13 +41,12 @@ func NewTradeMsg() *TradeMsg  {
 
 	return &TradeMsg{}
 }
-var tradeChannel *amqp.Channel
 
 //创建交易生产者
 func createTradeExchange() *amqp.Channel {
 
 
-	tradeChannel = GetChannel()
+	tradeChannel := GetChannel()
 	//声明一个trade Exchange
 	err := tradeChannel.ExchangeDeclare("tradeDEx", "x-delayed-message", true, false, false, false, map[string]interface{}{
 		"x-delayed-type":"direct",
@@ -65,9 +64,7 @@ func createTradeExchange() *amqp.Channel {
 }
 
 func PublishTradeMsgOfDelay(tradeMsg *TradeMsg,delaySec int) error {
-	if tradeChannel==nil{
-		tradeChannel  =createTradeExchange()
-	}
+	tradeChannel  :=createTradeExchange()
 
 	msgbytes,err := json.Marshal(tradeMsg)
 	if err!=nil{
@@ -98,9 +95,7 @@ func PublishTradeMsg(tradeMsg *TradeMsg) error  {
 
 //消费交易消息
 func ConsumeTradeMsg(fn func(tradeMsg *TradeMsg, dv amqp.Delivery)) {
-	if tradeChannel==nil{
-		tradeChannel  =createTradeExchange()
-	}
+	tradeChannel  :=createTradeExchange()
 	msgs, err := tradeChannel.Consume("tradeDQueue", "", false, false, false, false, nil)
 
 	if err==nil{

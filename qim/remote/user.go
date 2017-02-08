@@ -5,7 +5,38 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/network"
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"net/http"
+	"time"
+	"fmt"
+	"gitlab.qiyunxin.com/tangtao/utils/util"
 )
+
+func UserLogin(username,password string) (map[string]interface{},error)  {
+	imanagerUrl :=getImanagerPhpUrl()
+
+	timestamp := time.Now().Unix()
+
+	signStr := util.MD5(util.MD5(fmt.Sprintf("%s_%d",username,timestamp)))
+
+	param :=map[string]string{
+		"username": username,
+		"password": password,
+		"sign": signStr,
+		"time": fmt.Sprintf("%d",timestamp),
+	}
+	response,err :=network.Post(imanagerUrl+"/Cust/Init/login",param,nil)
+	if err!=nil{
+		log.Error(err)
+		log.Error("请求失败！")
+		return nil,err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		log.Error("状态错误：",response.StatusCode)
+		return nil,errors.New("不是有效的HTTP状态！")
+	}
+	log.Info(response.Body)
+	return GetResultMap(response.Body)
+}
 
 
 func AddUser(username string,mobile string,email string,password string,nickname string) (map[string]interface{},error)  {

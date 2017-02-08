@@ -23,7 +23,8 @@ func UserLogin(username,password string) (map[string]interface{},error)  {
 		"sign": signStr,
 		"time": fmt.Sprintf("%d",timestamp),
 	}
-	response,err :=network.Post(imanagerUrl+"/Cust/Init/login",param,nil)
+
+	response,err :=network.Get(imanagerUrl+"/Cust/Init/login",param,nil)
 	if err!=nil{
 		log.Error(err)
 		log.Error("请求失败！")

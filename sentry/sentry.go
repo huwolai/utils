@@ -29,6 +29,12 @@ func CaptureMajorErr(errStr string,flag string)  {
 	}
 }
 
+func CaptureErrWithTags(err error,tags map[string]string)  {
+	if IsStart {
+		raven.CaptureError(err,tags)
+	}
+}
+
 func CaptureErr(err error)  {
 	if IsStart {
 		raven.CaptureError(err,nil)

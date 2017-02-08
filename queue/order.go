@@ -81,7 +81,7 @@ func NewOrderEventItem() *OrderEventItem {
 //创建请求生产者
 func createOrderQueue() *amqp.Channel {
 	name :="order"
-	requestChannel = GetChannel()
+	requestChannel := GetChannel()
 	//声明一个trade Exchange
 	err := requestChannel.ExchangeDeclare(name+"Ex", "topic", true, false, false, false, nil)
 	util.CheckErr(err)
@@ -97,9 +97,7 @@ func createOrderQueue() *amqp.Channel {
 
 //发布订单事件
 func PublishOrderEvent(event *OrderEvent) error  {
-	if requestChannel==nil{
-		requestChannel  =createOrderQueue()
-	}
+	requestChannel  :=createOrderQueue()
 
 	if event.Version=="" {
 		event.Version = EVENT_VERSION_V1
@@ -124,9 +122,7 @@ func PublishOrderEvent(event *OrderEvent) error  {
 
 //消费订单事件
 func ConsumeOrderEvent(fn func(event *OrderEvent, dv amqp.Delivery))  {
-	if requestChannel==nil{
-		requestChannel  =createOrderQueue()
-	}
+	requestChannel  :=createOrderQueue()
 	name :="order"
 	msgs, err := requestChannel.Consume(name+"Queue", "", false, false, false, false, nil)
 

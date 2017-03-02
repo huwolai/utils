@@ -18,6 +18,7 @@ import (
 	"gitlab.qiyunxin.com/tangtao/utils/log"
 	"time"
 	"math/rand"
+	"errors"
 )
 
 const (
@@ -339,4 +340,30 @@ func ObjToStr(v interface{}) string {
 
 	}
 	return strV
+}
+
+
+//获取API请求的返回错误日志
+func GetApiResponseErr(status int,payload []byte,er error)  error {
+	if status==http.StatusBadRequest { //400 表示服务器有话要说
+		var errMap map[string]interface{}
+		err := ReadJsonByByte(payload,&errMap)
+		if err!=nil{
+			log.Error(err)
+			return errors.New("服务返回数据有误！")
+		}
+		errMsg := errMap["err_msg"]
+		if errMsg!=nil {
+			return errors.New(errMsg.(string))
+		}
+	}
+	if status == http.StatusOK {
+		return nil
+	}
+	if er!=nil{
+		log.Error(er)
+		return errors.New("请求API出错！")
+	}
+	return nil
+
 }
